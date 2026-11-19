@@ -1,0 +1,48 @@
+name: FirmaBlick Chromium browser QA
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-qa:
+    if: github.event_name == 'workflow_dispatch' || (github.event.issue.number == 6 && github.event.label.name == 'browser-qa')
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/v1-issue-6-ci-recovery
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Build website and prepare browser
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Browser check
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory dist >/tmp/firmablick-http.log 2>&1 &
+          node tests/browser-qa.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: firmablick-browser-qa
+          path: qa-artifacts/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Post verification result on Issue 6
+        if: always() && github.event_name == 'issues'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT: ${{ job.status }}
+        run: |
+          gh issue comment 6 --repo "${GITHUB_REPOSITORY}" --body "Chromium browser QA: **${RESULT}**. [Actions run](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}). Desktop/mobile screenshots attached to the run's artifacts when available."
