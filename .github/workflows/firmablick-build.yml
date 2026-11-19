@@ -108,6 +108,11 @@ jobs:
           fi
           git commit -m "Prototype site for issue #${ISSUE_NUMBER}"
           git push --set-upstream origin "$BRANCH"
-          gh pr create --base "${GITHUB_REF_NAME}" --head "$BRANCH" \
+          if gh pr create --base "${GITHUB_REF_NAME}" --head "$BRANCH" \
             --title "FirmaBlick website prototype (issue #${ISSUE_NUMBER})" \
-            --body "Automated first-cut build for #${ISSUE_NUMBER}. Review preview, assets, and placeholder data before merging. No production deployment authorized."
+            --body "Automated first-cut build for #${ISSUE_NUMBER}. Review preview, assets, and placeholder data before merging. No production deployment authorized."; then
+            echo "Pull request created successfully."
+          else
+            echo "::warning::Code built and pushed to branch $BRANCH, but GitHub Actions could not create the pull request."
+            echo "::notice::Enable 'Allow GitHub Actions to create and approve pull requests' under repository Settings > Actions > General, or open a PR manually: https://github.com/${GITHUB_REPOSITORY}/compare/${GITHUB_REF_NAME}...${BRANCH}?expand=1"
+          fi
