@@ -37,3 +37,5 @@ Issue #6 adds GitHub Actions CI for pull requests that change website code or te
 Regression tests use the Node built-in test runner and a deterministic DOM fixture. They cover interactive scenario assumptions, index response to energy assumptions, comparison visibility, research filtering, preview contact behavior, and the generated `dist/` entry point. Run in this order: `npm ci`, `npm run build`, `npm test`.
 
 These tests prove basic interface behavior, not real-browser mobile rendering or statistical correctness. Production deployment, DNS and GitHub merge remain manual.
+
+CI registration is tracked on the repository default branch; this feature branch carries the same regression suite for review and reproducibility.
