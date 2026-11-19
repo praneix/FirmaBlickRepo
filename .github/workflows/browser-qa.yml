@@ -9,6 +9,8 @@ jobs:
   browser-qa:
     if: github.event_name == 'workflow_dispatch' || (github.event.issue.number == 6 && github.event.label.name == 'browser-qa')
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
     timeout-minutes: 18
     permissions:
       contents: read
@@ -27,7 +29,6 @@ jobs:
           npm ci --ignore-scripts
           npm run build
           npm install --no-save --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium
       - name: Browser check
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 --directory dist >/tmp/firmablick-http.log 2>&1 &
