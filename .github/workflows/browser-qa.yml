@@ -14,7 +14,6 @@ jobs:
     timeout-minutes: 18
     permissions:
       contents: read
-      issues: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,10 +39,3 @@ jobs:
           path: qa-artifacts/
           if-no-files-found: ignore
           retention-days: 7
-      - name: Post verification result on Issue 6
-        if: always() && github.event_name == 'issues'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RESULT: ${{ job.status }}
-        run: |
-          gh issue comment 6 --repo "${GITHUB_REPOSITORY}" --body "Chromium browser QA: **${RESULT}**. [Actions run](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}). Desktop/mobile screenshots attached to the run's artifacts when available."
