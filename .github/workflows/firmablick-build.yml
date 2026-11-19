@@ -46,7 +46,7 @@ jobs:
           with open('/tmp/firmablick-issue.md','w') as f:
               f.write('# '+issue['title']+'\n\n'+issue.get('body',''))
           PY
-          echo "branch=agent/prototype-${ISSUE_NUMBER}-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+          echo "branch=agent/prototype-${ISSUE_NUMBER}-${GITHUB_RUN_ID}-a${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
       - name: Create build branch
         env:
           BRANCH: ${{ steps.issue.outputs.branch }}
