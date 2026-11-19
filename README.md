@@ -29,3 +29,13 @@ The Stitch export references remotely hosted images and fonts. The site uses tho
 ## Verification
 
 The static build and JavaScript syntax checks passed. A Node smoke check with a stub DOM exercised scenario controls, catalogue filtering and the form handler. Real-browser layout, keyboard and validation checks, remote image and font loading, and the Vercel preview are unverified in the restricted build environment.
+
+## CI and engineering acceptance
+
+Issue #6 adds GitHub Actions CI for pull requests that change website code or tests, and a manual workflow dispatch option. CI uses Node.js 22 and performs `npm ci --ignore-scripts`, `npm run build`, and `npm test`, followed by checking deployment artifacts.
+
+Regression tests use the Node built-in test runner and a deterministic DOM fixture. They cover interactive scenario assumptions, index response to energy assumptions, comparison visibility, research filtering, preview contact behavior, and the generated `dist/` entry point. Run in this order: `npm ci`, `npm run build`, `npm test`.
+
+These tests prove basic interface behavior, not real-browser mobile rendering or statistical correctness. Production deployment, DNS and GitHub merge remain manual.
+
+CI registration is tracked on the repository default branch; this feature branch carries the same regression suite for review and reproducibility.

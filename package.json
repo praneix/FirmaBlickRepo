@@ -4,6 +4,6 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node --check site/site.mjs && node --check scripts/build.mjs"
+    "test": "node --check site/site.mjs && node --check scripts/build.mjs && node --test tests/*.test.mjs"
   }
 }
