@@ -8,24 +8,15 @@ on:
       - 'package*.json'
       - 'vercel.json'
       - '.github/workflows/ci.yml'
-  issues:
-    types: [labeled]
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   verify:
-    if: github.event_name != 'issues' || (github.event.issue.number == 6 && github.event.label.name == 'ci-check')
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    permissions:
-      contents: read
-      issues: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'issues' && 'agent/v1-issue-6-ci-recovery' || github.sha }}
-          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -38,11 +29,3 @@ jobs:
           test -f dist/index.html
           test -f dist/site.mjs
           test -f dist/styles.css
-      - name: Report issue 6 validation result
-        if: always() && github.event_name == 'issues'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RESULT: ${{ job.status }}
-          SHA: ${{ github.sha }}
-        run: |
-          gh issue comment 6 --repo "${GITHUB_REPOSITORY}" --body "CI smoke-test result: **${RESULT}**. Issue #6 recovery branch: `agent/v1-issue-6-ci-recovery`. [View GitHub Actions run](https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})."
