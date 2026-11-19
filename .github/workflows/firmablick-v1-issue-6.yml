@@ -1,0 +1,93 @@
+name: FirmaBlick v1 Issue 6 CI build
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+
+concurrency:
+  group: firmablick-v1-issue-6
+  cancel-in-progress: false
+
+jobs:
+  implement:
+    if: (github.event_name == 'issues' && github.event.label.name == 'agent-build' && github.event.issue.number == 6) || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      issues: read
+    steps:
+      - name: Checkout approved prototype branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/prototype-2-44525788542
+          persist-credentials: true
+      - name: Read approved engineering issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh issue view 6 --json title,body,labels,state > /tmp/issue.json
+          python3 - <<'PY'
+          import json
+          i=json.load(open('/tmp/issue.json'))
+          if i['state']!='OPEN' or 'agent-build' not in [x['name'] for x in i['labels']]:
+              raise SystemExit('Issue #6 must be open and explicitly labelled agent-build')
+          open('/tmp/issue.md','w').write('# '+i['title']+'\n\n'+i['body'])
+          PY
+      - name: Create attempt-specific branch
+        id: branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="agent/v1-issue-6-${GITHUB_RUN_ID}-a${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$branch"
+          echo "name=$branch" >> "$GITHUB_OUTPUT"
+      - name: Codex implements GitHub Issue 6
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ":workspace"
+          prompt: |
+            Implement GitHub Issue #6 in THIS checked-out repository. Read /tmp/issue.md and README.md first.
+            The current website in site/ is the working Vercel preview; preserve all existing
+            HTML, CSS, scenario controls, images, and navigation. This is a targeted engineering task.
+            Add .github/workflows/ci.yml to run for pull requests:
+            npm ci, npm test, npm run build, and deterministic output smoke tests.
+            Add meaningful automated regression tests for scenario calculations, UI event bindings,
+            research topic filtering, and build output. Tests may use Node built-ins with no paid dependency.
+            Ensure tests are executable by npm test, documented, and pass.
+            Update README with validation commands and CI coverage.
+            Avoid new frontend frameworks, migration, model/data claims, external paid services,
+            secrets, database writes, DNS, deployments or changes outside this repository.
+            Do not change existing workflow credentials or GitHub permissions.
+            Finish by running tests and build, and report any limitations.
+      - name: Validate delivered code
+        run: |
+          set -euo pipefail
+          npm ci
+          npm test
+          npm run build
+          test -f dist/index.html
+          test -f dist/site.mjs
+          test -f dist/styles.css
+      - name: Commit and push implementation for PR review
+        env:
+          BRANCH: ${{ steps.branch.outputs.name }}
+        run: |
+          set -euo pipefail
+          git config user.name 'firmablick-build-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo "::error::Codex produced no tracked changes"; exit 1
+          fi
+          git commit -m "Implement v1 Issue #6 CI and regression checks"
+          git push --set-upstream origin "$BRANCH"
+          echo "### Implementation branch" >> "$GITHUB_STEP_SUMMARY"
+          echo "`$BRANCH`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Open a review PR into `agent/prototype-2-44525788542`." >> "$GITHUB_STEP_SUMMARY"
