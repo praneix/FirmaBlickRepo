@@ -1,0 +1,109 @@
+{
+  "contract_version": "1.0.0",
+  "scope": {
+    "geo": "DE",
+    "frequency": "M",
+    "measurement": "industrial production volume index",
+    "no_revenue_tonnes": true
+  },
+  "authorities": {
+    "destatis": {
+      "name": "Statistisches Bundesamt (Destatis)",
+      "role": "primary",
+      "dataset_family": "42153",
+      "landing_url": "https://genesis.destatis.de/datenbank/online/statistic/42153",
+      "api_docs": "https://www.destatis.de/EN/Service/OpenData/api-webservice.html",
+      "authentication": "Check GENESIS API credentials/limits; never commit token",
+      "licence_status": "Review current Destatis attribution/reuse conditions before redistribution",
+      "index_base_reference": "2021=100 (published in Nov 2026; revalidate on retrieval)"
+    },
+    "eurostat": {
+      "name": "Eurostat",
+      "role": "independent comparator",
+      "dataset_id": "sts_inpr_m",
+      "landing_url": "https://ec.europa.eu/eurostat/databrowser/product/view/sts_inpr_m",
+      "api_docs": "https://ec.europa.eu/eurostat/web/user-guides/data-browser/api-data-access/api-introduction",
+      "authentication": "Public dissemination endpoint; verify actual call/conditions",
+      "licence_status": "Review attribution and reuse requirements before republication",
+      "classification_transition": "Monitor NACE Rev. 2.1 STS requirements starting 2028; do not silently mix series"
+    }
+  },
+  "sectors": [
+    {
+      "slug": "manufacturing",
+      "canonical_code": "C",
+      "wz2008_code": "C",
+      "wz2008_label": "Manufacturing",
+      "primary_source": "destatis",
+      "primary_table": "42153-0001",
+      "comparator_source": "eurostat",
+      "comparator_dataset": "sts_inpr_m",
+      "comparator_nace_r2_code": "C",
+      "raw_dimension_codes": "discover from returned metadata; do not assume"
+    },
+    {
+      "slug": "chemicals",
+      "canonical_code": "C20",
+      "wz2008_code": "20",
+      "wz2008_label": "Manufacture of chemicals and chemical products",
+      "primary_source": "destatis",
+      "primary_table": "42153-0002",
+      "comparator_source": "eurostat",
+      "comparator_dataset": "sts_inpr_m",
+      "comparator_nace_r2_code": "C20",
+      "raw_dimension_codes": "discover from returned metadata; do not assume"
+    },
+    {
+      "slug": "basic-metals",
+      "canonical_code": "C24",
+      "wz2008_code": "24",
+      "wz2008_label": "Manufacture of basic metals",
+      "primary_source": "destatis",
+      "primary_table": "42153-0002",
+      "comparator_source": "eurostat",
+      "comparator_dataset": "sts_inpr_m",
+      "comparator_nace_r2_code": "C24",
+      "raw_dimension_codes": "discover from returned metadata; do not assume"
+    },
+    {
+      "slug": "machinery",
+      "canonical_code": "C28",
+      "wz2008_code": "28",
+      "wz2008_label": "Manufacture of machinery and equipment n.e.c.",
+      "primary_source": "destatis",
+      "primary_table": "42153-0002",
+      "comparator_source": "eurostat",
+      "comparator_dataset": "sts_inpr_m",
+      "comparator_nace_r2_code": "C28",
+      "raw_dimension_codes": "discover from returned metadata; do not assume"
+    },
+    {
+      "slug": "motor-vehicles",
+      "canonical_code": "C29",
+      "wz2008_code": "29",
+      "wz2008_label": "Manufacture of motor vehicles, trailers and semi-trailers",
+      "primary_source": "destatis",
+      "primary_table": "42153-0002",
+      "comparator_source": "eurostat",
+      "comparator_dataset": "sts_inpr_m",
+      "comparator_nace_r2_code": "C29",
+      "raw_dimension_codes": "discover from returned metadata; do not assume"
+    }
+  ],
+  "selection_policy": {
+    "preferred_release": "latest VALIDATED acquisition vintage only; retain earlier vintages",
+    "base_year": "read from actual source metadata; never hard-code conversion",
+    "seasonal_adjustment": "never interchange original, calendar-adjusted, seasonally-adjusted",
+    "missing_values": "null or missing with exact source status, never coerce to zero",
+    "provisional": "only if identified by upstream source status flag",
+    "data_types": [
+      "official",
+      "provisional",
+      "derived",
+      "estimated",
+      "nowcast",
+      "forecast",
+      "customer_adjusted"
+    ]
+  }
+}

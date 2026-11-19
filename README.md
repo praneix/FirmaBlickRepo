@@ -39,3 +39,11 @@ Regression tests use the Node built-in test runner and a deterministic DOM fixtu
 These tests prove basic interface behavior, not real-browser mobile rendering or statistical correctness. Production deployment, DNS and GitHub merge remain manual.
 
 CI registration is tracked on the repository default branch; this feature branch carries the same regression suite for review and reproducibility.
+
+## V1 official data contract (Issue #7)
+
+The preliminary five-industry source registry, versioned observation schema, and validation policy are in [docs/source-registry.md](docs/source-registry.md), [data-contracts/source-registry.v1.json](data-contracts/source-registry.v1.json) and [data-contracts/industrial-observation.v1.schema.json](data-contracts/industrial-observation.v1.schema.json).
+
+The current displayed simulator remains **illustrative**. No Destatis/Eurostat production ingestion or live forecast is yet connected. The source contract includes no actual statistical observations, access credentials or private customer information.
+
+`npm run build && npm test` runs the source-contract regression suite alongside the existing website tests. Domain-specific source validation is implemented in `scripts/validate-observation.mjs`. A complete Draft 2020-12 JSON Schema validation engine and live provider integration will be added in the ingestion phase.
