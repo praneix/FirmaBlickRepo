@@ -1,0 +1,102 @@
+name: FirmaBlick prototype build
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "GitHub issue number containing the approved build specification"
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  issues: read
+
+concurrency:
+  group: firmablick-prototype-build
+  cancel-in-progress: false
+
+jobs:
+  build-prototype:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      issues: read
+      pull-requests: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Validate input and fetch approved issue
+        id: issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+        run: |
+          set -euo pipefail
+          gh issue view "$ISSUE_NUMBER" --json title,body,labels,state > /tmp/firmablick-issue.json
+          python3 - <<'PY'
+          import json
+          issue=json.load(open('/tmp/firmablick-issue.json'))
+          labels={x['name'] for x in issue.get('labels',[])}
+          if issue['state']!='OPEN' or 'agent-build' not in labels:
+              raise SystemExit('Only open issues labelled agent-build can dispatch coding')
+          with open('/tmp/firmablick-issue.md','w') as f:
+              f.write('# '+issue['title']+'\n\n'+issue.get('body',''))
+          PY
+          echo "branch=agent/prototype-${ISSUE_NUMBER}-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+      - name: Create build branch
+        env:
+          BRANCH: ${{ steps.issue.outputs.branch }}
+        run: git switch -c "$BRANCH"
+      - name: Build with Codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ":workspace"
+          prompt: |
+            Implement the approved FirmaBlick first-cut website prototype in this repository.
+            Read /tmp/firmablick-issue.md and docs/BUILD_BRIEF.md.
+            Use Stitch exported files already in the repository as the visual source of truth.
+            If Stitch export is absent, build a professional original responsive
+            FirmaBlick site using brand values in BUILD_BRIEF.md and label
+            example data as illustrative. Do not invent real research datasets.
+            Prioritize running frontend code over backend functionality.
+            Implement home, research catalogue preview, intelligence scenario demo,
+            methodology and contact UI. Do not add live auth, payments, paid services,
+            third-party credentials, or customer-data processing.
+            Run tests/build if dependencies and available environment permit;
+            document untested items. Keep production secrets out of source.
+      - name: Install and build if package exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f package.json ]; then
+            corepack enable || true
+            if [ -f pnpm-lock.yaml ]; then corepack pnpm install --frozen-lockfile && corepack pnpm run build;
+            elif [ -f package-lock.json ]; then npm ci && npm run build;
+            else npm install --no-audit --no-fund && npm run build; fi
+          else
+            echo 'No package.json found; static HTML output is allowed for this first preview.'
+            test -f index.html || (echo 'No website entrypoint generated' && exit 1)
+          fi
+      - name: Commit and open review PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+          BRANCH: ${{ steps.issue.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name 'firmablick-build-bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Codex made no changes'; exit 1
+          fi
+          git commit -m "Prototype site for issue #${ISSUE_NUMBER}"
+          git push --set-upstream origin "$BRANCH"
+          gh pr create --base "${GITHUB_REF_NAME}" --head "$BRANCH" \
+            --title "FirmaBlick website prototype (issue #${ISSUE_NUMBER})" \
+            --body "Automated first-cut build for #${ISSUE_NUMBER}. Review preview, assets, and placeholder data before merging. No production deployment authorized."
