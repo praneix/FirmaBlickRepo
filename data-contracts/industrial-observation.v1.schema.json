@@ -1,0 +1,309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://firmablick.com/schemas/industrial-observation-v1.schema.json",
+  "title": "FirmaBlick immutable observation contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_id",
+    "dataset_id",
+    "original_series_key",
+    "original_dimensions",
+    "geo",
+    "frequency",
+    "period",
+    "measure",
+    "value",
+    "unit",
+    "base_year",
+    "adjustment",
+    "classification_system",
+    "classification_revision",
+    "industry_code",
+    "observation_type",
+    "source_status_flags",
+    "retrieved_at",
+    "raw_sha256",
+    "raw_snapshot_id",
+    "transformation_version"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "source_id": {
+      "enum": [
+        "destatis",
+        "eurostat"
+      ]
+    },
+    "dataset_id": {
+      "enum": [
+        "42153-0001",
+        "42153-0002",
+        "sts_inpr_m"
+      ]
+    },
+    "original_series_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "original_dimensions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "geo": {
+      "const": "DE"
+    },
+    "frequency": {
+      "const": "M"
+    },
+    "period": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "measure": {
+      "const": "industrial_production_volume_index"
+    },
+    "value": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "unit": {
+      "const": "index"
+    },
+    "base_year": {
+      "type": "integer",
+      "minimum": 1990,
+      "maximum": 2100
+    },
+    "adjustment": {
+      "enum": [
+        "original",
+        "calendar_adjusted",
+        "seasonally_adjusted",
+        "seasonal_calendar_adjusted"
+      ]
+    },
+    "classification_system": {
+      "enum": [
+        "WZ",
+        "NACE"
+      ]
+    },
+    "classification_revision": {
+      "enum": [
+        "WZ2008",
+        "NACE_REV2",
+        "NACE_REV2_1"
+      ]
+    },
+    "industry_code": {
+      "enum": [
+        "C",
+        "20",
+        "24",
+        "28",
+        "29",
+        "C20",
+        "C24",
+        "C28",
+        "C29"
+      ]
+    },
+    "observation_type": {
+      "enum": [
+        "official",
+        "provisional",
+        "derived",
+        "estimated",
+        "nowcast",
+        "forecast",
+        "customer_adjusted"
+      ]
+    },
+    "source_status_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "retrieved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "raw_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "raw_snapshot_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transformation_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_release_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "source_note": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "missing_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "derived_from": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "source_id": {
+            "const": "destatis"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "dataset_id": {
+            "enum": [
+              "42153-0001",
+              "42153-0002"
+            ]
+          },
+          "classification_system": {
+            "const": "WZ"
+          },
+          "classification_revision": {
+            "const": "WZ2008"
+          },
+          "industry_code": {
+            "enum": [
+              "C",
+              "20",
+              "24",
+              "28",
+              "29"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source_id": {
+            "const": "eurostat"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "dataset_id": {
+            "const": "sts_inpr_m"
+          },
+          "classification_system": {
+            "const": "NACE"
+          },
+          "classification_revision": {
+            "enum": [
+              "NACE_REV2",
+              "NACE_REV2_1"
+            ]
+          },
+          "industry_code": {
+            "enum": [
+              "C",
+              "C20",
+              "C24",
+              "C28",
+              "C29"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dataset_id": {
+            "const": "42153-0001"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "industry_code": {
+            "const": "C"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dataset_id": {
+            "const": "42153-0002"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "industry_code": {
+            "enum": [
+              "20",
+              "24",
+              "28",
+              "29"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "value": {
+            "type": "null"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "missing_reason"
+        ],
+        "properties": {
+          "missing_reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  ]
+}
