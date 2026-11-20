@@ -13,7 +13,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 
 CODES={"C":"42153-0001","20":"42153-0002","24":"42153-0002","28":"42153-0002","29":"42153-0002"}
-EXPECTED_COMPARATOR="65906eb5bcd853bf1b6f85c60d16d7d9f60fed9eace673daa4c2b5846e30c694"
+EXPECTED_COMPARATOR="7d2942a3769402645709cc9c06ad93686203661f7ee988d719858d1c352c9866"
 VALID_HEX="0123456789abcdef"
 def require(condition,message):
     if not condition: raise ValueError(message)
