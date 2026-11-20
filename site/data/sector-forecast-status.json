@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "status": "historical_only",
+  "source": "Destatis GENESIS 42153-0002",
+  "publication_approved": false,
+  "aggregate_release_transfer_permitted": false,
+  "release_flags": {
+    "20": false,
+    "24": false,
+    "28": false,
+    "29": false
+  },
+  "sectors": [
+    {
+      "industry_code": "28",
+      "mode": "historical_only",
+      "reason": "Machinery: official source-vintage and independent model validation pending."
+    },
+    {
+      "industry_code": "29",
+      "mode": "historical_only",
+      "reason": "Automotive: independent model validation and structural-break assessment pending."
+    },
+    {
+      "industry_code": "24",
+      "mode": "historical_only",
+      "reason": "Basic metals: independent source and model validation pending."
+    },
+    {
+      "industry_code": "20",
+      "mode": "historical_only",
+      "reason": "Chemicals: independent source and model validation pending."
+    }
+  ]
+}
