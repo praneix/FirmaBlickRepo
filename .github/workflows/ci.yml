@@ -8,6 +8,7 @@ on:
       - 'forecast/**'
       - 'docs/forecast-evaluation.md'
       - 'docs/manufacturing-forecast.md'
+      - 'docs/sector-forecast-gates.md'
       - 'data-contracts/**'
       - 'docs/genesis-ingestion.md'
       - 'docs/snapshot-store.md'
