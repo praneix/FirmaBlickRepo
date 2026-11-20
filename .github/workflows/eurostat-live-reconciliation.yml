@@ -1,0 +1,68 @@
+name: Eurostat live independent comparator (unpublished)
+on:
+  push:
+    branches: ['agent/eurostat-live-comparator-20261120']
+    paths:
+      - '.github/workflows/eurostat-live-reconciliation.yml'
+      - 'ingestion/eurostat.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  eurostat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Fetch and archive official Eurostat source without credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 -m ingestion.eurostat fetch --since 2015-01 --output artifacts/eurostat > /tmp/eurostat-safe-summary.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path('/tmp/eurostat-safe-summary.json').read_text())
+          if report.get('status')!='raw_snapshot_archived' or set(report.get('series_codes',[]))!={'C','C20','C24','C28','C29'}:
+              raise SystemExit('Actual Eurostat five-industry scope failed')
+          safe={'status':'live_eurostat_archived_unpublished',
+                'source':'sts_inpr_m','five_series':report['series_codes'],
+                'total_records':report['records'],
+                'source_digest':report['event']['raw_sha256'],
+                'retrieved_at':report['event']['retrieved_at'],
+                'publication_approved':False,
+                'numerical_cross_source_parity':'pending'}
+          Path('artifacts/eurostat-safe-evidence.json').write_text(json.dumps(safe,indent=2))
+          print(json.dumps(safe))
+          PY
+      - name: Preserve immutable original Eurostat response and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eurostat-live-unpublished-${{ github.run_id }}
+          path: |
+            artifacts/eurostat/firmablick/v1/eurostat/
+            artifacts/eurostat-safe-evidence.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Record external source execution result without source values or credentials
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+        shell: bash
+        run: |
+          {
+            echo "### Live Eurostat comparator acquisition (no publication)"
+            echo "Workflow: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "Status: ${JOB_STATUS}"
+            echo "Dataset sts_inpr_m; start period 2015-01; all 5 German industry codes."
+            echo "Official Destatis numerical reconciliation is pending separate matched-series evidence."
+          } > /tmp/firma-eurostat-status.md
+          gh issue comment 11 --repo "${GITHUB_REPOSITORY}" --body-file /tmp/firma-eurostat-status.md

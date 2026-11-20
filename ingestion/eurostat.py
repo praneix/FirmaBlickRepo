@@ -161,13 +161,22 @@ def normalize(payload, *, classification="NACE_REV2"):
 
 def fetch(*, transport=urlopen, sleep=time.sleep, attempts=3, params=None):
     params = dict(params or {})
-    defaults = {"geo": "DE", "freq": "M", "indic_bt": "PRD", "lang": "EN"}
+    # Never request the entire unrestricted STS cube: Eurostat responds HTTP 413.
+    # Restrict exact source dimensions before the request, retaining all 5 industries.
+    defaults = {"geo": "DE", "freq": "M", "indic_bt": "PRD", "lang": "EN",
+                "nace_r2": ["C", "C20", "C24", "C28", "C29"],
+                "s_adj": "NSA", "unit": "I21"}
     defaults.update(params)
     if defaults.get("geo") != "DE" or defaults.get("freq") != "M" or defaults.get("indic_bt") != "PRD":
         raise EurostatError("Only monthly German industrial production is approved.")
-    if not set(defaults).issubset({"geo", "freq", "indic_bt", "lang", "sinceTimePeriod", "untilTimePeriod"}):
+    if not set(defaults).issubset({"geo", "freq", "indic_bt", "lang", "sinceTimePeriod", "untilTimePeriod", "nace_r2", "s_adj", "unit"}):
         raise EurostatError("Unapproved Eurostat query dimension.")
-    url = URL + "?" + urlencode(defaults)
+    codes = defaults["nace_r2"]
+    if not isinstance(codes, list) or len(codes)!=5 or set(codes)!=CODES or len(set(codes))!=5:
+        raise EurostatError("Eurostat filter must include exactly five target industries.")
+    if defaults["s_adj"] != "NSA" or defaults["unit"] != "I21":
+        raise EurostatError("Eurostat query must be original volume index 2021=100.")
+    url = URL + "?" + urlencode(defaults, doseq=True)
     for attempt in range(attempts):
         try:
             with transport(Request(url, headers={"Accept":"application/json",
@@ -245,7 +254,7 @@ class EurostatArchive:
         validate_jsonstat(payload)
         if not isinstance(response, dict) or not isinstance(params, dict):
             raise EurostatError("Invalid response/request metadata.")
-        if not set(params).issubset({"geo","freq","indic_bt","lang","sinceTimePeriod","untilTimePeriod"}):
+        if not set(params).issubset({"geo","freq","indic_bt","lang","sinceTimePeriod","untilTimePeriod","nace_r2","s_adj","unit"}):
             raise EurostatError("Unsafe Eurostat request parameter.")
         if params.get("geo") != "DE" or params.get("freq") != "M" or params.get("indic_bt") != "PRD":
             raise EurostatError("Invalid response scope.")
