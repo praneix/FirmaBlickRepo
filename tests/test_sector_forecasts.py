@@ -1,5 +1,6 @@
 """Issue #16: independent synthetic sector model/lineage/release safeguards."""
 import copy
+import hashlib
 import math
 import unittest
 from forecast.benchmarks import Observation, _month_number, _month_string
@@ -31,7 +32,7 @@ def synthetic(code,*,n=180,shock=False,missing=None,late=None,revision=False):
 def source(code,**changes):
     s={"dataset_id":"42153-0002","industry_code":code,"geo":"DE","frequency":"M",
        "unit":"index","base_year":2021,"adjustment":"original",
-       "classification_revision":"WZ2008","raw_sha256":code[0]*64,
+       "classification_revision":"WZ2008","raw_sha256":hashlib.sha256(code.encode()).hexdigest(),
        "acquisition_id":"synthetic-acquisition-"+code,"official_source_certified":False}
     s.update(changes)
     return s
