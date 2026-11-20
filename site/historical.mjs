@@ -1,4 +1,4 @@
-import {INDUSTRIES,verifyHistoricalPayload,latestMonth,filterMonths,plotPoints,svgSegments} from './historical-core.mjs';
+import {INDUSTRIES,verifyHistoricalPayload,latestMonth,filterMonths,plotPoints,svgSegments,sourceAgeDays} from './historical-core.mjs';
 const get=(id)=>document.getElementById(id);
 const picker=get('historical-sector'),range=get('historical-range'),status=get('historical-status');
 const figure=get('historical-chart'),table=get('historical-rows');
@@ -19,6 +19,14 @@ function draw(series){
   const element=(tag,attrs={})=>{const el=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(v));return el;};
   const values=rows.filter(r=>r.value!==null);
   if(values.length){
+    const min=Math.min(...values.map(o=>o.value));const max=Math.max(...values.map(o=>o.value));
+    const axis=document.createElementNS(ns,'text');axis.setAttribute('x','38');axis.setAttribute('y','18');axis.textContent='Index range: '+min.toFixed(1)+'–'+max.toFixed(1);
+    figure.append(axis);
+    const from=document.createElementNS(ns,'text');from.setAttribute('x','38');from.setAttribute('y','220');from.textContent=rows[0].period;
+    const to=document.createElementNS(ns,'text');to.setAttribute('x','644');to.setAttribute('y','220');to.setAttribute('text-anchor','end');to.textContent=rows.at(-1).period;
+    figure.append(from,to);
+  }
+  if(values.length){
     const desc=element('desc');desc.textContent='Historical monthly production index. Detailed values appear in the following accessible table.';figure.append(desc);
     for(const segment of svgSegments(points)){
       if(segment.length>1) figure.append(element('polyline',{points:segment.map(p=>p.x.toFixed(1)+','+p.y.toFixed(1)).join(' '),class:'historical-line'}));
@@ -32,7 +40,9 @@ function draw(series){
     tr.append(th,td,flag);table.append(tr);
   }
   caption.textContent='Monthly production index ('+series.base_year+' = 100), '+series.adjustment.replaceAll('_',' ')+', Germany.';
-  status.textContent=values.length? 'Latest source period: '+latestMonth(series)+' · '+values.length+' observed values in selected range.' :
+  const age=sourceAgeDays(series.retrieved_at);
+  const stale=age>120?' · Source vintage is '+age+' days old; displaying last validated release.':'';
+  status.textContent=values.length? 'Latest source period: '+latestMonth(series)+' · '+values.length+' observed values in selected range.'+stale :
     'The selected months contain no published numeric observations.';
   const link=document.createElement('a');link.href=series.source_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Destatis source';
   meta.replaceChildren(document.createTextNode(
