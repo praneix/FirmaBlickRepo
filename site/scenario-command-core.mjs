@@ -59,7 +59,7 @@ function clauseMatches(raw) {
   if(pattern('(?:show|display|view|plot)(?:\\s+(?:the|my|a))?\\s+(?:(?:2030|current)\\s+)?(?:outlook|trajectory|results?|chart|comparison)(?:\\s+for\\s+2030)?').test(s))
     return {view:true};
   // Compare is recognized BEFORE case to prevent accidental primary-case changes.
-  if ((m=s.match(pattern('(?:compare(?:\\s+(?:it|this|the\\s+result))?\\s+(?:with|against|to)|comparison\\s+(?:to|with|against|is|=)|set\\s+comparison\\s+to)\\s+(none|central|resilience|transformation)(?:\\s+case|\\s+scenario)?'))))
+  if ((m=s.match(pattern('(?:compare(?:\\s+(?:it|this|the\\s+result))?\\s+(?:with|against|to)|comparison\\s+(?:to|with|against|is|=)|set\\s+comparison\\s+to)\\s+(?:the\\s+)?(none|central|resilience|transformation)(?:\\s+case|\\s+scenario)?'))))
     return {field:'comparison',value: m[1]==='none'?'None':canonicalCase(m[1])};
   if ((m=s.match(pattern('(?:use|choose|select|switch\\s+to|set(?:\\s+(?:the|my))?\\s+(?:scenario|case)\\s+(?:to|as|=)|change(?:\\s+(?:the|my))?\\s+(?:scenario|case)\\s+to)\\s+'+caseName+'(?:\\s+case|\\s+scenario)?'))))
     return {field:'scenario',value:canonicalCase(m[1])};
