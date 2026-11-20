@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  issues: write
 jobs:
   extended-source:
     runs-on: ubuntu-latest
@@ -59,3 +60,21 @@ jobs:
             artifacts/extended-source-safe-report.json
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Record acquisition execution outcome on issue 10 without secret
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACQ_STATE: ${{ job.status }}
+        shell: bash
+        run: |
+          {
+            echo "### Extended historical acquisition execution"
+            echo "Workflow: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "Job status: ${ACQ_STATE}"
+            echo "Requested interval: 2015–2026; tables 42153-0001/42153-0002."
+            echo "Source data remains unpublished, independent parity and validation outstanding."
+            echo "Inspect the workflow artifact and checksums before accepting completion."
+          } > /tmp/firma-status.md
+          gh issue comment 10 --repo "${GITHUB_REPOSITORY}" --body-file /tmp/firma-status.md
