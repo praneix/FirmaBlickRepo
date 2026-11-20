@@ -1,0 +1,75 @@
+{
+  "version": "1.0.0",
+  "status": "PREDECLARED_NO_REAL_EVALUATION",
+  "statistical_target": {
+    "source": "Destatis GENESIS",
+    "dataset": "42153-0001",
+    "industry": "C",
+    "geography": "DE",
+    "frequency": "monthly",
+    "measure": "industrial_production_volume_index",
+    "classification": "WZ2008",
+    "base_year": "provider_metadata_verified",
+    "adjustment": "explicit_single_pinned_adjustment_for_every_run",
+    "missing": "quarantine_without_backfill"
+  },
+  "vintage_requirement": {
+    "origin_training": "Only observations with acquisition/release time at or before each forecast origin; reconstructed from Issue 9 snapshots, never retrofitted",
+    "candidate_truth": "Scored from independently archived truth vintage at evaluation cutoff",
+    "cross_source": "Eurostat only audit comparator, not training replacement",
+    "unverified": "synthetic diagnostic only; publication prohibited"
+  },
+  "development": {
+    "minimum_training_months": 60,
+    "seasonal_period": 12,
+    "horizons_months": [
+      1,
+      3,
+      6,
+      12
+    ],
+    "evaluation": "expanding rolling origin",
+    "minimum_eligible_origins": 24,
+    "monthly_origin_spacing": 1,
+    "final_holdout_months": 24,
+    "holdout_locked_until": "model_specification_features_hyperparameters_and_thresholds_frozen",
+    "benchmark_methods": [
+      "last_value",
+      "seasonal_naive",
+      "drift"
+    ],
+    "data_scaling": "No full-sample transformation; MASE denominator uses training-only seasonal differences"
+  },
+  "metrics": {
+    "MAE": "average absolute index-point error",
+    "bias": "signed forecast minus actual",
+    "MASE": "absolute forecast error divided by training-only mean absolute seasonal difference; null when denominator zero",
+    "sMAPE": "200×|actual−forecast|/(|actual|+|forecast|); null for both zero; interpretation caveats",
+    "coverage": "empirical interval coverage only for independently precalibrated bounds; missing otherwise",
+    "stability": "by horizon, per origin and across alternative historical evaluation windows",
+    "sample_counts": "mandatory for every horizon/method"
+  },
+  "proposed_release_gate": {
+    "preconditions": [
+      "authenticated official Destatis provenance and source vintage fidelity confirmed",
+      "24 final holdout months reserved and unopened until candidate frozen",
+      "at least 24 eligible development origins",
+      "at least 12 comparable holdout forecast errors per horizon",
+      "model compared with seasonal naive on exact common origin/target pairs"
+    ],
+    "numerical": [
+      "candidate MAE <=95% seasonal-naive MAE at each horizon",
+      "minimum 20 independent interval observations per horizon for empirical coverage review",
+      "nominal 90% interval empirical coverage must lie between 80% and 98% at each horizon"
+    ],
+    "governance": [
+      "independent final assessment and source-unit consistency",
+      "review sample size and dependency of overlapping horizons",
+      "no claim of statistical significance without adequate uncertainty analysis",
+      "separate written publication approval"
+    ],
+    "fallback": "benchmark-only with transparent failure reasons; no calibrated model forecast presented"
+  },
+  "prior_results": "No actual German statistical backtests or empirical benchmark superiority claimed",
+  "creator_note": "Thresholds are preliminary prespecified business quality gates, not observed facts; freeze before using a genuine final holdout."
+}
