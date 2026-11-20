@@ -231,6 +231,12 @@ def normalize_event(store: SnapshotStore, event: dict, profile: dict) -> list[di
         require(raw_quality in profile["quality_map"], "STATUS_UNKNOWN",
                 f"Row {row_index} has an unrecognized source quality status.")
         mapping = profile["quality_map"][raw_quality]
+        if "quality" not in row:
+            require(mapping["observation_type"] == "official" and
+                    mapping["missing_reason"] is None and
+                    "provisional" not in mapping["source_status_flags"],
+                    "STATUS_UNDOCUMENTED",
+                    "Absent source status cannot establish provisional or missing classification.")
         number, exact = parse_decimal(row["value"], missing_reason=mapping["missing_reason"])
         identity = (industry, month, profile["adjustment"], profile["value_variable_code"])
         require(identity not in duplicates, "DUPLICATE_OBSERVATION",
