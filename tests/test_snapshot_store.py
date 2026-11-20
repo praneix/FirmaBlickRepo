@@ -180,10 +180,10 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(other.events("42153-0002"), [])
 
     def test_source_query_and_http_credentials_not_persisted(self):
+        bad = evidence()
+        bad["request"] = {"name": "42153-0002", "password": "sensitive"}
         with self.assertRaises(SnapshotError):
-            self.store.archive(**evidence(
-                http={"tablefile": {"http_status": 200}, "metadata": {"http_status": 200}},
-                request={"name": "42153-0002", "password": "sensitive"}))
+            self.store.archive(**bad)
         self.assertEqual(self.store.metrics()["acquisition_events"], 0)
         example = evidence()
         example["http"]["tablefile"]["Authorization"] = "SECRET"
