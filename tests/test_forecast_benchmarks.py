@@ -116,6 +116,10 @@ class BenchmarkTests(unittest.TestCase):
                 self.assertEqual(met["n"],20)
                 self.assertGreaterEqual(met["mae"],0)
                 self.assertTrue(math.isfinite(met["bias"]))
+                self.assertTrue(math.isfinite(met["early_mae"]))
+                self.assertTrue(math.isfinite(met["late_mae"]))
+                self.assertAlmostEqual(met["mae_stability_delta"],
+                                       met["late_mae"]-met["early_mae"])
                 self.assertTrue(math.isfinite(met["mase"]))
                 self.assertTrue(math.isfinite(met["smape"]))
                 self.assertIsNone(met["interval_coverage"])
