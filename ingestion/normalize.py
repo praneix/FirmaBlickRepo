@@ -139,7 +139,10 @@ def unzip_csv(raw: bytes) -> tuple[list[str], list[dict]]:
     require(bool(fields) and len(fields) == len(set(fields)), "COLUMNS_INVALID",
             "Source CSV field names missing or duplicated.")
     required = {"time", "value", "value_unit", "value_variable_code",
-                "statistics_code", "quality"}
+                "statistics_code"}
+    # The authentic GENESIS 42153 FFCsv response (2026-11) has no dedicated
+    # quality column. Preserve that absence explicitly instead of inventing a
+    # provisional/final source status. Older saved fixtures may include it.
     require(required <= set(fields), "COLUMNS_INVALID",
             "Essential GENESIS flat-file columns are missing.")
     dims = [field for field in fields if re.fullmatch(r"\d+_variable_attribute_code", field)
@@ -195,9 +198,27 @@ def normalize_event(store: SnapshotStore, event: dict, profile: dict) -> list[di
             continue
         if row["value_variable_code"] != profile["value_variable_code"]:
             continue
-        month = (row["time"] or "").strip()
+        raw_time = (row["time"] or "").strip()
+        if PERIOD.fullmatch(raw_time):
+            # Legacy flat-file fixture: an already composed monthly period.
+            month = raw_time
+        else:
+            # Current GENESIS FFCsv: time_code=JAHR, time=YYYY, and
+            # the actual month is a dedicated MONAT01..MONAT12 dimension.
+            require(row.get("time_code") == "JAHR" and
+                    bool(re.fullmatch(r"(19|20)\d{2}", raw_time)),
+                    "PERIOD_INVALID",
+                    f"Row {row_index} has an unknown annual time definition.")
+            month_dimensions = [dimensions[key] for key in dims if
+                                (row[key.replace("_attribute_code", "_code")] or "").strip()
+                                == "MONAT"]
+            require(len(month_dimensions) == 1 and
+                    bool(re.fullmatch(r"MONAT(0[1-9]|1[0-2])", month_dimensions[0])),
+                    "PERIOD_INVALID",
+                    f"Row {row_index} has missing/ambiguous GENESIS month dimension.")
+            month = raw_time + "-" + month_dimensions[0][-2:]
         require(bool(PERIOD.fullmatch(month)), "PERIOD_INVALID",
-                f"Row {row_index} is not a monthly YYYY-MM period.")
+                f"Row {row_index} does not resolve to monthly YYYY-MM.")
         raw_unit = (row["value_unit"] or "").strip()
         bases = INDEX_BASE.findall(raw_unit)
         require(len(bases) == 1, "UNIT_UNKNOWN",
@@ -206,7 +227,7 @@ def normalize_event(store: SnapshotStore, event: dict, profile: dict) -> list[di
         require(base == profile["expected_base_year"], "BASE_CONFLICT",
                 f"Row {row_index} index base differs from confirmed metadata.")
         selected_bases.add(base)
-        raw_quality = (row["quality"] or "").strip()
+        raw_quality = (row.get("quality") or "").strip()
         require(raw_quality in profile["quality_map"], "STATUS_UNKNOWN",
                 f"Row {row_index} has an unrecognized source quality status.")
         mapping = profile["quality_map"][raw_quality]
@@ -224,8 +245,15 @@ def normalize_event(store: SnapshotStore, event: dict, profile: dict) -> list[di
             original_dimensions[dimension_code] = (row[dimension_code] or "").strip()
         original_dimensions["value_variable_code"] = row["value_variable_code"]
         original_dimensions["statistics_code"] = row["statistics_code"]
-        original_dimensions["quality"] = raw_quality or "empty"
+        original_dimensions["time_code"] = row.get("time_code") or ""
+        original_dimensions["raw_time"] = raw_time
+        original_dimensions["quality"] = (
+            raw_quality or ("not_provided" if "quality" not in row else "empty"))
         status_flags = list(mapping["source_status_flags"])
+        if "quality" not in row:
+            # Absence of a source quality field is an observable fact, never
+            # an attestation that the value is final or unrevised.
+            status_flags.append("source_quality_field_not_provided")
         item = {
             "schema_version": "1.0.0", "source_id": "destatis",
             "dataset_id": table,
