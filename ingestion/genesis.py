@@ -305,16 +305,29 @@ def acquire(client: GenesisClient, output: Path, *, startyear: int, endyear: int
         raise GenesisError("Invalid start/end years.")
     if output.is_symlink():
         raise GenesisError("Refusing symlink output directory.")
-    results = []
-    for table in TABLES:
-        metadata, mi = client.table_metadata(table)
-        archive, ai = client.tablefile(table, startyear, endyear)
-        inventory = inspect_ffcsv(archive, table)
-        results.append(write_snapshot(output, table, metadata, archive, mi, ai, inventory,
-                                      startyear=startyear, endyear=endyear))
-    return {"status": "discovered_and_downloaded", "published": False,
-            "coverage": sorted({code for v in results for code in v["covered_codes"]}),
-            "snapshots": results}
+    from ingestion.snapshot_store import SnapshotStore, SnapshotError
+    try:
+        store = SnapshotStore(output)
+        results = []
+        coverage = set()
+        for table in TABLES:
+            metadata, mi = client.table_metadata(table)
+            archive, ai = client.tablefile(table, startyear, endyear)
+            inventory = inspect_ffcsv(archive, table)
+            query = {"name": table, "startyear": startyear, "endyear": endyear,
+                     "format": "ffcsv", "area": "all", "compress": "true",
+                     "job": "false", "language": "de"}
+            event = store.archive(
+                dataset_id=table, archive=archive, metadata=metadata,
+                source_url=BASE_URL, request=query, http={"metadata": mi, "tablefile": ai},
+                inventory=inventory,
+            )
+            results.append({"table": table, "covered_codes": inventory["covered_codes"], **event})
+            coverage.update(inventory["covered_codes"])
+        return {"status": "discovered_and_downloaded", "published": False,
+                "coverage": sorted(coverage), "snapshots": results}
+    except (SnapshotError, OSError) as exc:
+        raise GenesisError(f"Source snapshot archive unavailable: {exc}") from exc
 
 
 def cli(argv: list[str] | None = None) -> int:
