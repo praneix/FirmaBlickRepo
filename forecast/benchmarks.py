@@ -177,9 +177,11 @@ def _origin_dates(origins):
 
 def run_backtest(history:list[Observation],origins:list[dict],truth_cutoff:str,
                  *, intervals:Mapping[str,Mapping[int,float]]|None=None,
-                 allow_diagnostic=False):
+                 allow_diagnostic=True, final_holdout_start:str|None=None):
     """Rolling expanding-window multi-horizon scores.
 
+    Results here are diagnostic until independently certified archival evidence
+    validates that source vintages reflect *actual* point-in-time releases.
     An origin's training data is strictly as-of its decision time. Target truth
     is the latest observation available by truth_cutoff, with that evaluation
     cutoff explicitly reported. Intervals must be PRECALIBRATED externally;
@@ -191,6 +193,12 @@ def run_backtest(history:list[Observation],origins:list[dict],truth_cutoff:str,
     if len(origins)<MIN_EVAL_ORIGINS and not allow_diagnostic:
         raise ForecastError("Too few eligible origins for formal evaluation.")
     truth=as_of(history,truth_cutoff)
+    if final_holdout_start is not None:
+        if not isinstance(final_holdout_start,str) or len(final_holdout_start)!=7:
+            raise ForecastError("Final holdout start must use YYYY-MM.")
+        _month_number(final_holdout_start)
+    elif not allow_diagnostic:
+        raise ForecastError("Frozen holdout boundary required for formal evaluation.")
     output=[]
     excluded=[]
     for origin in origins:
@@ -206,6 +214,10 @@ def run_backtest(history:list[Observation],origins:list[dict],truth_cutoff:str,
         scale=_scale(training)
         for horizon in HORIZONS:
             target=_month_string(_month_number(origin_month)+horizon)
+            if final_holdout_start is not None and target>=final_holdout_start:
+                excluded.append({"origin":origin_month,"horizon":horizon,
+                                 "target":target,"reason":"Locked final 24-month holdout."})
+                continue
             candidate=truth.get(target)
             if candidate is None or candidate.value is None:
                 excluded.append({"origin":origin_month,"horizon":horizon,
@@ -238,8 +250,10 @@ def run_backtest(history:list[Observation],origins:list[dict],truth_cutoff:str,
         }
     return {
       "protocol_version":PROTOCOL_VERSION,
-      "assessment":"synthetic_diagnostic" if allow_diagnostic else "vintage_aware_evaluation",
-      "real_time_claim_permitted":not allow_diagnostic,
+      "assessment":"synthetic_or_unverified_diagnostic" if allow_diagnostic else "vintage_replay_unverified_source",
+      "real_time_claim_permitted":False,
+      "official_source_certified":False,
+      "final_holdout_start":final_holdout_start,
       "history_sha256":_fingerprint(history),"truth_cutoff":truth_cutoff,
       "origins_requested":len(origins),"origins_eligible":len({r["origin"] for r in output}),
       "metrics":metrics,"predictions":output,"excluded":excluded,
@@ -250,8 +264,8 @@ def run_backtest(history:list[Observation],origins:list[dict],truth_cutoff:str,
 
 def release_decision(backtest:dict,*,final_holdout_unlocked=False,model_metrics=None):
     """Frozen predeclared gate for *future* models; no model is proposed in #13."""
-    if backtest.get("assessment")!="vintage_aware_evaluation":
-        return {"approved":False,"reason":"Only point-in-time official-vintage evaluations are eligible."}
+    if backtest.get("assessment")!="vintage_aware_evaluation" or backtest.get("official_source_certified") is not True:
+        return {"approved":False,"reason":"Certified point-in-time official-source evidence is required."}
     if not final_holdout_unlocked:
         return {"approved":False,"reason":"Final 24-month holdout must remain locked until candidate freeze."}
     if model_metrics is None:
