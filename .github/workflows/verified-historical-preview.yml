@@ -28,6 +28,7 @@ jobs:
       - name: Run existing tests with unpublished public site JSON
         run: |
           npm ci --ignore-scripts
+          npm run build
           npm test
       - name: Download authentic original Destatis snapshot, not committed to Git
         uses: actions/download-artifact@v4
