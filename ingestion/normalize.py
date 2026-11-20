@@ -283,7 +283,7 @@ def normalize_pair(store: SnapshotStore, profile_by_table: dict) -> list[dict]:
     combined = []
     bases = set()
     adjustments = set()
-    acquisition_times = []
+    month_sets = []
     for table in TABLES:
         event = store.latest(table)
         require(event is not None, "ACQUISITION_MISSING",
@@ -292,7 +292,10 @@ def normalize_pair(store: SnapshotStore, profile_by_table: dict) -> list[dict]:
         combined.extend(items)
         bases.update(x["observation"]["base_year"] for x in items)
         adjustments.update(x["observation"]["adjustment"] for x in items)
-        acquisition_times.append(event["retrieved_at"])
+        month_sets.append({x["observation"]["period"] for x in items})
+    require(all(months == month_sets[0] for months in month_sets),
+            "CROSS_TABLE_PERIOD_COVERAGE",
+            "Manufacturing aggregate and industry divisions cover different months.")
     require(len(bases) == 1, "BASE_CONFLICT",
             "Manufacturing/sector source tables have inconsistent base years.")
     require(len(adjustments) == 1, "ADJUSTMENT_CONFLICT",
