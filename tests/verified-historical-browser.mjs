@@ -28,8 +28,9 @@ try {
     assert.equal(await page.locator('#historical-rows tr').first().locator('th').innerText(),'2015-01');
     assert.equal(await page.locator('#historical-rows tr').last().locator('th').innerText(),'2026-09');
     assert.ok(await page.locator('#historical-chart polyline').count()>0,'real series plotted for '+code);
-    const source=page.locator('#historical-provenance a');
+    const source=page.locator('#historical-provenance a').first();
     assert.match(await source.getAttribute('href'),/https:\/\/genesis\.destatis\.de\//);
+    assert.match(await page.locator('#historical-provenance a').last().getAttribute('href'),/eurostat/);
     const data=await page.locator('#historical-rows tr td:first-of-type').allInnerTexts();
     assert.equal(data.length,141);
     assert.ok(data.every(value=>/^\d+\.\d$/.test(value)),'official values rendered as numeric index');
