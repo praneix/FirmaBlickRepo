@@ -12,12 +12,18 @@ const isUTC = (s) => typeof s === 'string' && /^\d{4}-\d\d-\d\dT/.test(s) && s.e
 const known = Object.fromEntries(INDUSTRIES.map(i=>[i.code,i]));
 const validSha = (s) => typeof s === 'string' && /^[a-f0-9]{64}$/.test(s);
 export function verifyHistoricalPayload(payload) {
-  if (!payload || payload.schema_version !== '1.0.0' || !['unavailable','validated'].includes(payload.status)) throw Error('Invalid historical data status.');
+  if (!payload || payload.schema_version !== '1.0.0' || !['unavailable','validated','preview_validated'].includes(payload.status)) throw Error('Invalid historical data status.');
   if (payload.status === 'unavailable') {
     if (!Array.isArray(payload.series) || payload.series.length || typeof payload.reason !== 'string' || !payload.reason.trim()) throw Error('Unverified series must not carry data.');
     return payload;
   }
   if (!isUTC(payload.generated_at) || !Array.isArray(payload.series) || payload.series.length !== 5) throw Error('Missing source-certified five-series release.');
+  const preview = payload.status === 'preview_validated';
+  if (preview && (payload.release_scope !== 'protected_vercel_preview_only' ||
+      payload.public_release_authorized !== false ||
+      payload.verification !== '705_of_705_exact' ||
+      !validSha(payload.comparator_raw_sha256)))
+    throw Error('Protected source comparison scope is incomplete.');
   const seen=new Set();
   for (const s of payload.series) {
     const meta=known[s.industry_code];
@@ -27,7 +33,8 @@ export function verifyHistoricalPayload(payload) {
         !['original','calendar_adjusted','seasonally_adjusted','seasonal_calendar_adjusted'].includes(s.adjustment) ||
         !Number.isInteger(s.base_year) || s.base_year < 1990 || s.base_year > 2100 ||
         !isUTC(s.retrieved_at) || !validSha(s.raw_sha256) || !s.acquisition_id ||
-        s.official_verification !== true || s.publication_approved !== true ||
+        s.official_verification !== true ||
+        (preview ? (s.publication_approved !== false || s.preview_verified !== true) : s.publication_approved !== true) ||
         typeof s.source_url !== 'string' || !s.source_url.startsWith('https://genesis.destatis.de/') ||
         !Array.isArray(s.observations) || !s.observations.length || s.observations.length > MAX_POINTS) throw Error('Historical series source certification incomplete.');
     seen.add(s.industry_code);

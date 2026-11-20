@@ -1,0 +1,121 @@
+name: Authenticated source-backed protected Vercel historical preview
+on:
+  push:
+    branches: ['agent/verified-historical-vercel-preview-20261120']
+    paths:
+      - '.github/workflows/verified-historical-preview.yml'
+      - 'scripts/build-verified-history-preview.py'
+      - 'site/historical-core.mjs'
+      - 'site/historical.mjs'
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: read
+  issues: write
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Run existing tests with unpublished public site JSON
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+          npm test
+      - name: Download authentic original Destatis snapshot, not committed to Git
+        uses: actions/download-artifact@v4
+        with:
+          name: genesis-extended-original-unpublished-44702970458
+          run-id: 44702970458
+          repository: praneix/FirmaBlickRepo
+          github-token: ${{ github.token }}
+          path: artifacts/source/destatis
+      - name: Download independent original Eurostat JSON-stat snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: eurostat-live-unpublished-44703565920
+          run-id: 44703565920
+          repository: praneix/FirmaBlickRepo
+          github-token: ${{ github.token }}
+          path: artifacts/source/eurostat
+      - name: Verify all 705 source pairs and generate ephemeral preview-only JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 scripts/build-verified-history-preview.py | tee /tmp/preview-build-safe.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          j=json.loads(Path('site/data/historical.json').read_text())
+          assert j['status']=='preview_validated'
+          assert j['release_scope']=='protected_vercel_preview_only'
+          assert j['public_release_authorized'] is False
+          assert len(j['series'])==5
+          assert sum(len(s['observations']) for s in j['series'])==705
+          assert all(s['publication_approved'] is False for s in j['series'])
+          print('PREVIEW_SOURCE_ACCEPTED_705_NO_PUBLIC_AUTHORIZATION')
+          PY
+          npm run build
+          node scripts/security-audit.mjs
+          node scripts/beta-release-gate.mjs --assert-blocked
+      - name: Exclude original source archives from any deployment upload
+        shell: bash
+        run: |
+          cat > .vercelignore <<'TXT'
+          artifacts/
+          .git/
+          .github/
+          tests/
+          docs/
+          ingestion/
+          forecast/
+          release-artifacts/
+          TXT
+      - name: Deploy only to SSO-protected Vercel preview via owner-managed secret
+        id: vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${VERCEL_TOKEN:-}" ]; then
+            echo 'VERCEL_TOKEN_MISSING: owner must create Vercel API token and add GitHub Actions secret named VERCEL_TOKEN.'
+            exit 2
+          fi
+          mkdir -p .vercel
+          printf '%s' '{"orgId":"team_dSxzE7R8hqT0ujX0RXdmERjM","projectId":"prj_ZVh7LUKGG7UTC8YAb1v213CS3Pzt"}' > .vercel/project.json
+          npx --yes vercel@48.11.1 deploy --yes --token "$VERCEL_TOKEN" --scope firma-blick > /tmp/vercel-preview-url.txt
+          grep -q '^https://' /tmp/vercel-preview-url.txt
+          echo "Protected preview deployment created: $(cat /tmp/vercel-preview-url.txt)"
+      - name: Record safe execution state and blockers to issue tracker
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+          VERCEL_STEP: ${{ steps.vercel.outcome }}
+        shell: bash
+        run: |
+          {
+            echo '### Source-backed five-industry Vercel preview'
+            echo "Run: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "Overall job: ${JOB_STATUS}; Vercel deployment step: ${VERCEL_STEP}."
+            echo 'Snapshot pair: official Destatis + Eurostat, 705 original source observations, 2015-01 through 2026-09.'
+            echo 'All data generated ephemerally on CI runner; source blobs and data JSON never committed.'
+            if [ -s /tmp/vercel-preview-url.txt ]; then
+              echo "Preview URL: $(cat /tmp/vercel-preview-url.txt)"
+            else
+              echo 'If missing VERCEL_TOKEN, owner must create the personal token on Vercel and save only in GitHub repository Actions secret VERCEL_TOKEN.'
+            fi
+            echo 'Public release and all model release flags remain blocked.'
+          } >/tmp/firma-preview-status.md
+          gh issue comment 12 --repo "${GITHUB_REPOSITORY}" --body-file /tmp/firma-preview-status.md
