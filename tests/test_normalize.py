@@ -143,6 +143,17 @@ class NormalizationTests(unittest.TestCase):
         with self.assertRaisesRegex(QualityError, "Duplicate"):
             normalize_event(self.store, event, profile())
 
+    def test_aggregate_and_divisions_month_mismatch_is_quarantined(self):
+        self.source("42153-0001")
+        raw = altered_zip(fixture_zip("42153-0002"),
+                          lambda txt: txt.replace("2026-01", "2026-02"))
+        self.source("42153-0002", archive=raw)
+        outcome = run_quality_gate(self.store, {"42153-0001": profile(),
+                                                "42153-0002": profile()})
+        self.assertEqual(outcome["status"], "QUARANTINED")
+        self.assertEqual(outcome["reason_code"], "CROSS_TABLE_PERIOD_COVERAGE")
+        self.assertFalse(outcome["publication_approved"])
+
     def test_unverified_metadata_profile_quarantined(self):
         self.both()
         result = run_quality_gate(self.store, {"42153-0001": profile(confirmed=False),
