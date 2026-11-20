@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  issues: write
 jobs:
   acquire:
     runs-on: ubuntu-latest
@@ -26,3 +27,12 @@ jobs:
           path: artifacts/energy-research/
           retention-days: 30
           if-no-files-found: error
+
+      - name: Report acquisition run for research verification
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          echo "Energy source acquisition: ${JOB_STATUS}; https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. Check raw artifact source coverage; no publication." > /tmp/energy-run-note
+          gh issue comment 35 --repo "${GITHUB_REPOSITORY}" --body-file /tmp/energy-run-note
