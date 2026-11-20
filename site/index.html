@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;500;600;700&amp;family=Crimson+Pro:wght@500;600;700&amp;family=Spline+Sans+Mono&amp;display=swap">
   <link rel="stylesheet" href="./styles.css">
   <script type="module" src="./site.mjs"></script>
+  <script type="module" src="./historical.mjs"></script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -15,7 +16,7 @@
 <header class="header">
   <div class="wrap row">
     <a class="brand" href="#home"><span class="monogram" aria-hidden="true">FB</span><span><strong>FirmaBlick</strong><small>STRUCTURE. PERSPECTIVE. IMPACT.</small></span></a>
-    <nav aria-label="Main navigation"><a href="#home">Home</a><a href="#intelligence">Intelligence</a><a href="#research">Research</a><a href="#methodology">Methodology</a><a href="#contact">Contact</a></nav>
+    <nav aria-label="Main navigation"><a href="#home">Home</a><a href="#intelligence">Intelligence</a><a href="#historical">Historical data</a><a href="#research">Research</a><a href="#methodology">Methodology</a><a href="#contact">Contact</a></nav>
     <a class="button header-cta" href="#contact">Request a briefing</a>
   </div>
 </header>
@@ -68,6 +69,34 @@
           <div class="legend"><span id="primary-key"></span><span id="comparison-key"></span></div>
           <details><summary>View illustrative values by year</summary><table><caption>Production index, 2026 = 100</caption><thead><tr><th scope="col">Year</th><th scope="col">Adjusted</th><th scope="col">Comparison</th></tr></thead><tbody id="trajectory"></tbody></table></details>
         </div>
+      </div>
+    </div>
+  </section>
+  <section id="historical" class="section wrap historical" aria-labelledby="historical-title">
+    <p class="eyebrow">German industrial production · Evidence desk</p>
+    <h2 id="historical-title">Manufacturing historical intelligence</h2>
+    <p class="lead">Five manufacturing-sector views sourced from Destatis GENESIS when independently verified. These figures measure industrial production volume as an index. They do not represent company revenue, euro market size or physical consumption.</p>
+    <p class="historical-note" id="historical-disclosure"><strong>Data integrity gate.</strong> Until verified official observations are released, the historical chart remains empty. The separate scenario simulator above remains illustrative.</p>
+    <div class="historical-shell">
+      <div class="historical-controls">
+        <div><label for="historical-sector">Manufacturing industry</label><select id="historical-sector" aria-describedby="historical-disclosure"></select></div>
+        <div><label for="historical-range">Historical period</label><select id="historical-range"><option value="12">Latest 12 months</option><option value="24">Latest 24 months</option><option value="60" selected>Latest 5 years</option><option value="120">Latest 10 years</option><option value="240">Latest 20 years</option></select></div>
+      </div>
+      <div class="historical-body">
+        <p id="historical-status" role="status" aria-live="polite">Checking official historical data availability.</p>
+        <figure aria-labelledby="historical-figure-title">
+          <figcaption id="historical-figure-title">Production index history</figcaption>
+          <svg id="historical-chart" viewBox="0 0 700 230" role="img" aria-label="Monthly historical industrial production index. See the data table for exact values."></svg>
+        </figure>
+        <p class="historical-meta" id="historical-provenance">Source verification pending.</p>
+        <details class="historical-details" open>
+          <summary>View historical monthly values</summary>
+          <div class="historical-table-wrap"><table>
+            <caption id="historical-caption">No verified monthly production-index observations available.</caption>
+            <thead><tr><th scope="col">Month</th><th scope="col">Production index</th><th scope="col">Source status</th></tr></thead>
+            <tbody id="historical-rows"></tbody>
+          </table></div>
+        </details>
       </div>
     </div>
   </section>
