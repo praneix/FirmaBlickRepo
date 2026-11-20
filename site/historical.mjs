@@ -47,7 +47,7 @@ function draw(series){
   if (payload.status==='preview_validated') { status.textContent+=' Source values independently matched to Eurostat (705/705); source release-status flags are unavailable. Public publication remains blocked.'; }
   const link=document.createElement('a');link.href=series.source_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Destatis source';
   meta.replaceChildren(document.createTextNode(
-    '© Statistisches Bundesamt (Destatis), GENESIS-Online '+series.dataset_id+
+    'Source: Destatis GENESIS · © Statistisches Bundesamt (Destatis), GENESIS-Online '+series.dataset_id+
     ' · Data Licence Germany Attribution 2.0 · WZ2008 '+series.industry_code+
     ' · Retrieved '+series.retrieved_at+(payload.status==='preview_validated'?' · Cross-checked against Eurostat sts_inpr_m · Protected preview only · ':' · Release verified · ')),link);
   if(payload.status==='preview_validated'){
