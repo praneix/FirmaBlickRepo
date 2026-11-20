@@ -27,3 +27,7 @@ GitHub artifact retention is through 2026-12-20 (per artifact metadata). Preserv
 
 ## Next task
 T02: expand the authenticated original-source window sufficiently for >=60 months of training, frozen 24-month final holdout, and rolling-origin backtesting. Validate API date selection and historical metadata before acceptance. This likely needs the already-configured GitHub `GENESIS_TOKEN` in a credential-safe workflow, not exposure of the secret.
+
+
+## Additional raw CSV inspection
+The two nested stored ZIP files contain FFCsv text with respectively 7,260 and 3,828 rows covering the complete source table categories, beyond the five target series. The embedded raw CSV text lengths were 2,565,400 and 1,322,974 bytes. All target observations use index unit `2021=100` and value code `PRO101`. The four observed adjustment codes are `WERTORG`, `X13JDKB`, `X13JDKSB`, and `BV4TB`; semantic verification of `BV4TB` is pending. Raw **original** January 2024 observations are C=90.1, C20=84.0, C24=93.6, C28=82.8, C29=100.2 (index points), extracted directly from the snapshot. They are **not** independently checked against a separate Destatis published display, so they are not golden-file parity evidence. The source CSV omits a standalone quality column, and no per-cell final/revised status is asserted.
