@@ -121,3 +121,27 @@ footer { background: #0b1e2d; color: var(--ivory); padding-top: 48px; }
 @media (max-width: 370px) {
   .themes { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Historical intelligence: verified-source-only desktop and mobile interface */
+.historical { color: var(--navy); }
+.historical-note { background: #f3f1ec; border-left: 3px solid var(--red); padding: 14px 18px; max-width: 85ch; }
+.historical-shell { margin-top: 24px; border: 1px solid var(--border); background: white; border-radius: 4px; overflow: hidden; }
+.historical-controls { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; padding: 24px; background: var(--wash); }
+.historical-controls label { display: block; font-weight: 700; margin-bottom: 8px; }
+.historical-body { padding: clamp(16px,3vw,28px); }
+#historical-status { border-left: 3px solid var(--red); padding: 10px 14px; background: #f6f4ef; }
+.historical-body figcaption { font: 600 1.45rem var(--serif); padding: 12px 0; }
+#historical-chart { background: #fafafa; border: 1px solid var(--border); min-height: 160px; color: var(--navy); }
+.historical-line { stroke: var(--red); stroke-width: 2.5; fill: none; }
+.historical-point { fill: var(--red); }
+.historical-meta { font-size: .83rem; overflow-wrap: anywhere; margin: 16px 0; color: var(--muted); }
+.historical-details { margin-top: 20px; }
+.historical-table-wrap { overflow-x: auto; max-height: 430px; overflow-y: auto; margin-top: 12px; }
+.historical-table-wrap th, .historical-table-wrap td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+.historical-table-wrap thead { position: sticky; top: 0; background: white; }
+.historical-table-wrap caption { text-align: left; color: var(--muted); }
+@media(max-width:740px) {
+  .historical-controls { grid-template-columns: minmax(0,1fr); padding: 16px; }
+  .historical-body { padding: 16px; }
+  .historical-table-wrap { max-height: 330px; }
+}
