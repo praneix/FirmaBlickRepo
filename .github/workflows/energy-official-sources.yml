@@ -1,0 +1,28 @@
+name: Energy research official source acquisition (no deployment)
+on:
+  push:
+    branches: ['agent/energy-flagship-evidence-20261120']
+    paths:
+      - 'research/energy/source_acquisition.py'
+      - '.github/workflows/energy-official-sources.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  acquire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Acquire source snapshots without secrets
+        run: python3 research/energy/source_acquisition.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: firmablick-energy-official-snapshots-${{github.run_id}}
+          path: artifacts/energy-research/
+          retention-days: 30
+          if-no-files-found: error
