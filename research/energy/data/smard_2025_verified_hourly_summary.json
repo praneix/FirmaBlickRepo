@@ -1,0 +1,408 @@
+{
+  "source_name": "Fraunhofer Energy-Charts price API, original Bundesnetzagentur | SMARD.de, CC BY 4.0",
+  "source_url": "https://api.energy-charts.info/price?bzn=DE-LU&start=2025-01-01&end=2025-12-31",
+  "source_blob_sha": "8ac19f91ae6d413f3d8f2cc16585af72e0c8fa40",
+  "source_git_commit": "da51d5cf93859737777a9299f02c94eea2e338ba",
+  "period_local": "2025-01-01 to 2025-12-31 Europe/Berlin",
+  "raw_price_records": 15387,
+  "hourly_equivalent_hours": 8760,
+  "invalid_source_intervals": 0,
+  "incomplete_hourly_equivalents": 0,
+  "time_weighted_average_eur_mwh": 89.32172,
+  "negative_hourly_equivalent_count": 576,
+  "published_smard_2025_reference_average_eur_mwh": 89.32,
+  "published_smard_2025_reference_negative_hour_count": 573,
+  "negative_hour_count_method_difference": "published count=573 vs reconstructed hourly mean negative count=576; 15-min market clearing from October 2025 and method differences; do not claim exact parity for this measure",
+  "percentiles": {
+    "1pct": -18.95,
+    "5pct": -0.12,
+    "10pct": 4.1,
+    "25pct": 71.05,
+    "50pct": 92.43,
+    "75pct": 114.14,
+    "90pct": 140.92,
+    "95pct": 162.3475,
+    "99pct": 242.5625
+  },
+  "price_duration_points": [
+    {
+      "percentile": 0,
+      "eur_mwh": -250.32
+    },
+    {
+      "percentile": 2,
+      "eur_mwh": -6
+    },
+    {
+      "percentile": 4,
+      "eur_mwh": -1.01
+    },
+    {
+      "percentile": 6,
+      "eur_mwh": -0.01
+    },
+    {
+      "percentile": 8,
+      "eur_mwh": 0.1
+    },
+    {
+      "percentile": 10,
+      "eur_mwh": 4.1
+    },
+    {
+      "percentile": 12,
+      "eur_mwh": 13.01
+    },
+    {
+      "percentile": 14,
+      "eur_mwh": 25.9125
+    },
+    {
+      "percentile": 16,
+      "eur_mwh": 40.99
+    },
+    {
+      "percentile": 18,
+      "eur_mwh": 53.7
+    },
+    {
+      "percentile": 20,
+      "eur_mwh": 61.01
+    },
+    {
+      "percentile": 22,
+      "eur_mwh": 66.18
+    },
+    {
+      "percentile": 24,
+      "eur_mwh": 69.75
+    },
+    {
+      "percentile": 26,
+      "eur_mwh": 72.58
+    },
+    {
+      "percentile": 28,
+      "eur_mwh": 75.5
+    },
+    {
+      "percentile": 30,
+      "eur_mwh": 77.95
+    },
+    {
+      "percentile": 32,
+      "eur_mwh": 79.96
+    },
+    {
+      "percentile": 34,
+      "eur_mwh": 81.78
+    },
+    {
+      "percentile": 36,
+      "eur_mwh": 83.37
+    },
+    {
+      "percentile": 38,
+      "eur_mwh": 84.79
+    },
+    {
+      "percentile": 40,
+      "eur_mwh": 85.9
+    },
+    {
+      "percentile": 42,
+      "eur_mwh": 87.4
+    },
+    {
+      "percentile": 44,
+      "eur_mwh": 88.7
+    },
+    {
+      "percentile": 46,
+      "eur_mwh": 89.92
+    },
+    {
+      "percentile": 48,
+      "eur_mwh": 91
+    },
+    {
+      "percentile": 50,
+      "eur_mwh": 92.43
+    },
+    {
+      "percentile": 52,
+      "eur_mwh": 94.06
+    },
+    {
+      "percentile": 54,
+      "eur_mwh": 95.68
+    },
+    {
+      "percentile": 56,
+      "eur_mwh": 97.2
+    },
+    {
+      "percentile": 58,
+      "eur_mwh": 98.45
+    },
+    {
+      "percentile": 60,
+      "eur_mwh": 100
+    },
+    {
+      "percentile": 62,
+      "eur_mwh": 101.54
+    },
+    {
+      "percentile": 64,
+      "eur_mwh": 103.2
+    },
+    {
+      "percentile": 66,
+      "eur_mwh": 105.21
+    },
+    {
+      "percentile": 68,
+      "eur_mwh": 107.085
+    },
+    {
+      "percentile": 70,
+      "eur_mwh": 108.84
+    },
+    {
+      "percentile": 72,
+      "eur_mwh": 110.49
+    },
+    {
+      "percentile": 74,
+      "eur_mwh": 112.78
+    },
+    {
+      "percentile": 76,
+      "eur_mwh": 115.2
+    },
+    {
+      "percentile": 78,
+      "eur_mwh": 118.26
+    },
+    {
+      "percentile": 80,
+      "eur_mwh": 120.71
+    },
+    {
+      "percentile": 82,
+      "eur_mwh": 123.57
+    },
+    {
+      "percentile": 84,
+      "eur_mwh": 126.9025
+    },
+    {
+      "percentile": 86,
+      "eur_mwh": 130.11
+    },
+    {
+      "percentile": 88,
+      "eur_mwh": 134.98
+    },
+    {
+      "percentile": 90,
+      "eur_mwh": 140.92
+    },
+    {
+      "percentile": 92,
+      "eur_mwh": 147.56
+    },
+    {
+      "percentile": 94,
+      "eur_mwh": 155.77
+    },
+    {
+      "percentile": 96,
+      "eur_mwh": 170
+    },
+    {
+      "percentile": 98,
+      "eur_mwh": 197.13
+    },
+    {
+      "percentile": 100,
+      "eur_mwh": 583.4
+    }
+  ],
+  "bins": {
+    "below_zero": 576,
+    "0_to_50": 943,
+    "50_to_100": 3731,
+    "100_to_150": 2873,
+    "150_to_250": 557,
+    "250_plus": 80
+  },
+  "monthly": {
+    "2025-01": {
+      "hours": 744,
+      "average": 114.14,
+      "negative_hours": 14
+    },
+    "2025-02": {
+      "hours": 672,
+      "average": 128.52,
+      "negative_hours": 0
+    },
+    "2025-03": {
+      "hours": 743,
+      "average": 94.73,
+      "negative_hours": 30
+    },
+    "2025-04": {
+      "hours": 720,
+      "average": 77.94,
+      "negative_hours": 75
+    },
+    "2025-05": {
+      "hours": 744,
+      "average": 67.34,
+      "negative_hours": 129
+    },
+    "2025-06": {
+      "hours": 720,
+      "average": 63.99,
+      "negative_hours": 141
+    },
+    "2025-07": {
+      "hours": 744,
+      "average": 87.8,
+      "negative_hours": 12
+    },
+    "2025-08": {
+      "hours": 744,
+      "average": 76.99,
+      "negative_hours": 64
+    },
+    "2025-09": {
+      "hours": 720,
+      "average": 83.51,
+      "negative_hours": 60
+    },
+    "2025-10": {
+      "hours": 745,
+      "average": 84.4,
+      "negative_hours": 51
+    },
+    "2025-11": {
+      "hours": 720,
+      "average": 101.88,
+      "negative_hours": 0
+    },
+    "2025-12": {
+      "hours": 744,
+      "average": 93.47,
+      "negative_hours": 0
+    }
+  },
+  "time_of_day_berlin": {
+    "10": {
+      "samples": 365,
+      "avg": 71.57
+    },
+    "11": {
+      "samples": 365,
+      "avg": 59.34
+    },
+    "12": {
+      "samples": 365,
+      "avg": 50.46
+    },
+    "13": {
+      "samples": 365,
+      "avg": 45.99
+    },
+    "14": {
+      "samples": 365,
+      "avg": 49.84
+    },
+    "15": {
+      "samples": 365,
+      "avg": 63.22
+    },
+    "16": {
+      "samples": 365,
+      "avg": 78.99
+    },
+    "17": {
+      "samples": 365,
+      "avg": 103.01
+    },
+    "18": {
+      "samples": 365,
+      "avg": 124.21
+    },
+    "19": {
+      "samples": 365,
+      "avg": 136.18
+    },
+    "20": {
+      "samples": 365,
+      "avg": 130.6
+    },
+    "21": {
+      "samples": 365,
+      "avg": 115.44
+    },
+    "22": {
+      "samples": 365,
+      "avg": 104.63
+    },
+    "23": {
+      "samples": 365,
+      "avg": 92.9
+    },
+    "00": {
+      "samples": 365,
+      "avg": 88.86
+    },
+    "01": {
+      "samples": 365,
+      "avg": 83.58
+    },
+    "02": {
+      "samples": 365,
+      "avg": 80.79
+    },
+    "03": {
+      "samples": 365,
+      "avg": 79.48
+    },
+    "04": {
+      "samples": 365,
+      "avg": 81.06
+    },
+    "05": {
+      "samples": 365,
+      "avg": 87.05
+    },
+    "06": {
+      "samples": 365,
+      "avg": 101.19
+    },
+    "07": {
+      "samples": 365,
+      "avg": 114.02
+    },
+    "08": {
+      "samples": 365,
+      "avg": 110.74
+    },
+    "09": {
+      "samples": 365,
+      "avg": 90.56
+    }
+  },
+  "notes": [
+    "Raw price records change interval duration from hourly to quarter-hourly during 2025.",
+    "Hourly equivalent uses second-weighted settlement intervals; UTC time-slices grouped to Europe/Berlin calendar months.",
+    "The duration-weighted 2025 average independently reconciles to the BNetzA 2025 official average of EUR 89.32/MWh.",
+    "Published 573 negative hours differs by three from the reconstructed 576 negative hourly means; this difference remains method-labelled and open for reconciliation.",
+    "Wholesale market index is not site-level delivered cost."
+  ]
+}
