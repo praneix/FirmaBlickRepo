@@ -1,0 +1,62 @@
+name: CV1-02 Canonical Integration Assurance
+on:
+  push:
+    branches: ['agent/fb-v1-integration-20261120']
+    paths:
+      - 'site/**'
+      - 'tests/**'
+      - 'scripts/**'
+      - 'ingestion/**'
+      - 'forecast/**'
+      - 'research/**'
+      - 'data-contracts/**'
+      - 'release/**'
+      - 'package*.json'
+      - 'vercel.json'
+      - '.github/workflows/cv1-02-integration-assurance.yml'
+      - '.github/workflows/n8n-readonly-diagnostics.yml'
+      - 'docs/integration/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: fb-integration-qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify site build and JavaScript tests
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+          npm test
+      - name: Verify security, statistical and nonpublication controls
+        run: |
+          node scripts/security-audit.mjs
+          node scripts/beta-release-gate.mjs --assert-blocked
+          python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Confirm protected candidate and canonical artifacts
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          assert Path('dist/index.html').is_file()
+          assert Path('research/n8n/diagnose_readonly.py').is_file()
+          assert Path('scripts/verify-restored-statistical-archives.py').is_file()
+          assert Path('research/energy/verify_hourly.py').is_file()
+          h=json.loads(Path('site/data/historical.json').read_text())
+          r=json.loads(Path('release/beta-manifest.v1.json').read_text())
+          assert h['status']=='unavailable' and len(h['series'])==0
+          assert r['release_state']=='BLOCKED' and not r['deploy']['production_authorized'] and not r['deploy']['dns_authorized']
+          print('NONPRODUCTION_INTEGRATION_BASELINE_VERIFIED')
+          PY
