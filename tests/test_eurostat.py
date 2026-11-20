@@ -151,13 +151,13 @@ class EurostatTests(unittest.TestCase):
         e=next(x for x in rows if x["industry_code"]=="C28" and x["period"]=="2026-01"
                and x["adjustment"]=="original")
         primary=[sample_primary(value=e["value"])]
-        same=reconcile(primary,[e])
+        same=reconcile(primary,[e],mapping_verified=True)
         self.assertEqual(same["summary"],{"compared":1,"excluded":0,"deviations":0})
         self.assertEqual(same["compared"][0]["assessment"],"exact")
         changed={**e,"value":e["value"]+0.1}
-        close=reconcile(primary,[changed])
+        close=reconcile(primary,[changed],mapping_verified=True)
         self.assertEqual(close["compared"][0]["assessment"],"within_tolerance")
-        far=reconcile(primary,[{**e,"value":e["value"]+2.0}])
+        far=reconcile(primary,[{**e,"value":e["value"]+2.0}],mapping_verified=True)
         self.assertEqual(far["compared"][0]["assessment"],"deviation")
         self.assertEqual(primary[0]["observation"]["value"],e["value"])
 
@@ -171,17 +171,37 @@ class EurostatTests(unittest.TestCase):
             ({"classification_revision":"NACE_REV2_1"},"classification_mapping_not_verified"),
             ({"geo":"FR"},"geography_or_frequency_mismatch"),
         ]:
-            report=reconcile([baseline],[{**e,**change}])
+            report=reconcile([baseline],[{**e,**change}],mapping_verified=True)
             self.assertEqual(report["summary"]["compared"],0)
             self.assertEqual(report["excluded"][0]["reason"],reason)
         self.assertFalse(reconcile([baseline],[])["publication_approved"])
 
+    def test_reconciliation_requires_confirmed_crosswalk(self):
+        e=next(x for x in normalize(fixture()) if x["industry_code"]=="C28"
+               and x["period"]=="2026-01" and x["adjustment"]=="original")
+        d=sample_primary(value=e["value"])
+        unapproved=reconcile([d],[e])
+        self.assertEqual(unapproved["summary"]["compared"],0)
+        self.assertEqual(unapproved["excluded"][0]["reason"],"classification_mapping_not_verified")
+        self.assertFalse(unapproved["classification_mapping_verified"])
+        approved=reconcile([d],[e],mapping_verified=True)
+        self.assertEqual(approved["summary"]["compared"],1)
+        self.assertTrue(approved["classification_mapping_verified"])
+
+    def test_ambiguous_duplicate_comparator_is_not_silently_selected(self):
+        e=next(x for x in normalize(fixture()) if x["industry_code"]=="C28"
+               and x["period"]=="2026-01" and x["adjustment"]=="original")
+        result=reconcile([sample_primary(value=e["value"])],[e,{**e,"value":e["value"]+2}],
+                         mapping_verified=True)
+        self.assertEqual(result["summary"]["compared"],0)
+        self.assertEqual(result["excluded"][0]["reason"],"ambiguous_comparator_duplicate")
+
     def test_reconcile_missing_and_unmatched_period_reasons(self):
         e=next(x for x in normalize(fixture()) if x["industry_code"]=="C28"
                and x["period"]=="2026-01" and x["adjustment"]=="original")
-        missing=reconcile([sample_primary(value=None)],[e])
+        missing=reconcile([sample_primary(value=None)],[e],mapping_verified=True)
         self.assertEqual(missing["excluded"][0]["reason"],"missing_observation")
-        unmatched=reconcile([sample_primary(period="2025-01")],[e])
+        unmatched=reconcile([sample_primary(period="2025-01")],[e],mapping_verified=True)
         self.assertEqual({x["reason"] for x in unmatched["excluded"]},
                          {"missing_comparator","missing_primary"})
 
