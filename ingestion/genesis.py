@@ -82,7 +82,7 @@ def decode_api_json(raw: bytes, operation: str) -> dict:
         raise GenesisError(f"{operation}: malformed JSON response.") from exc
     code, message = api_status(data)
     # According to the GENESIS API, an HTTP 200 can also carry an error Status.
-    if code not in ("0", "1"):
+    if code != "0":
         suffix = (" (check token credentials)" if code in ("2", "15") else "")
         raise GenesisError(f"{operation}: GENESIS status {code}: {message[:250]}{suffix}",
                            exit_code=2 if code in ("2", "15") else 1)
@@ -122,7 +122,14 @@ class GenesisClient:
                     }
                     return raw, info
             except HTTPError as exc:
-                if exc.code in (401, 403):
+                # Some GENESIS authentication failures arrive as HTTP 404 with
+                # Status.Code 2 or 15, rather than a conventional 401/403.
+                try:
+                    err_payload = json.loads(exc.read(8192).decode("utf-8-sig"))
+                    err_code, _ = api_status(err_payload)
+                except (ValueError, UnicodeDecodeError, GenesisError):
+                    err_code = ""
+                if exc.code in (401, 403) or err_code in ("2", "15"):
                     raise GenesisError(
                         "GENESIS authentication rejected. Check the read-only token in GENESIS_TOKEN.",
                         exit_code=2,
@@ -143,6 +150,18 @@ class GenesisClient:
 
     def logincheck(self) -> dict:
         raw, _ = self.post("helloworld/logincheck", {"language": "de"})
+        # Official Destatis examples return a *textual* Status for logincheck,
+        # whereas metadata/table returns Status {Code, Content}. Accept the
+        # textual success only with the documented Username evidence.
+        try:
+            payload = json.loads(raw.decode("utf-8-sig"))
+        except (ValueError, UnicodeDecodeError) as exc:
+            raise GenesisError("logincheck: malformed JSON response.") from exc
+        if isinstance(payload, dict) and isinstance(payload.get("Status"), str):
+            message = payload["Status"].lower()
+            if payload.get("Username") and ("erfolgreich" in message or "successful" in message):
+                return payload
+            raise GenesisError("GENESIS logincheck: authentication was not confirmed.", exit_code=2)
         return decode_api_json(raw, "logincheck")
 
     def table_metadata(self, table: str) -> tuple[bytes, dict]:
@@ -198,7 +217,8 @@ def inspect_ffcsv(archive: bytes, table: str) -> dict:
     fields = reader.fieldnames or []
     if not {"value", "time"}.issubset(fields):
         raise GenesisError("GENESIS flat-file CSV missing value/time columns.")
-    dims = [key for key in fields if re.fullmatch(r"\d+_variable_attribute_code", key)]
+    dims = [key for key in fields if re.fullmatch(r"\d+_variable_attribute_code", key)
+            and key.replace("_attribute_code", "_code") in fields]
     if not dims:
         raise GenesisError("GENESIS CSV has no coded industry dimensions.")
     expected = TARGETS[table]
@@ -209,7 +229,11 @@ def inspect_ffcsv(archive: bytes, table: str) -> dict:
         if not any(record.values()):
             continue
         raw_codes = {key: (record.get(key) or "").strip() for key in dims}
-        matched = {target for target in expected for code in raw_codes.values()
+        # Match industry codes exclusively on WZ-classifying dimensions, not
+        # arbitrary month/adjustment attributes that might also equal "20".
+        industry_codes = [raw_codes[key] for key in dims
+                          if "WZ" in (record.get(key.replace("_attribute_code", "_code")) or "").upper()]
+        matched = {target for target in expected for code in industry_codes
                    if code in CODE_ALIASES[target]}
         if len(matched) > 1:
             raise GenesisError("Ambiguous industry codes within a GENESIS record.")
