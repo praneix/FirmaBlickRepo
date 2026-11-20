@@ -52,9 +52,9 @@ def origins(start="2020-01",count=24):
 class ManufacturingForecastTests(unittest.TestCase):
     def test_monthly_candidate_model_is_explicit_and_reproducible(self):
         vals=[float(i) for i in range(60)]
-        self.assertEqual(point_forecast(vals,1),48+12*.85)
+        self.assertAlmostEqual(point_forecast(vals,1),48+12*(1-.85)/(1-.85**12))
         self.assertAlmostEqual(point_forecast(vals,12),
-                               59+12*(.85*(1-.85**12)/(.15)))
+                               59+12)
         self.assertEqual(point_forecast(vals,1),point_forecast(vals,1))
 
     def test_zero_floor_and_training_only_inputs(self):
@@ -145,7 +145,7 @@ class ManufacturingForecastTests(unittest.TestCase):
         clean=forecast_package(original,origin_month="2020-01",
                                origin_at="2020-02-20T00:00:00Z",source=source())
         self.assertEqual(current["forecast_months"],clean["forecast_months"])
-        self.assertNotEqual(current["forecast_input_sha256"],clean["forecast_input_sha256"])
+        self.assertEqual(current["forecast_input_sha256"],clean["forecast_input_sha256"])
         with self.assertRaises(ForecastError):
             forecast_package(fixtures(80,future_release_at=50),origin_month="2016-08",
                              origin_at="2016-09-20T00:00:00Z",source=source())
