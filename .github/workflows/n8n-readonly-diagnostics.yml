@@ -1,5 +1,10 @@
 name: FirmaBlick n8n Read-only Diagnostics
 on:
+  push:
+    branches: ['agent/n8n-readonly-diagnostics-20261120']
+    paths:
+      - '.github/workflows/n8n-readonly-diagnostics.yml'
+      - 'research/n8n/**'
   workflow_dispatch:
 permissions:
   contents: read
