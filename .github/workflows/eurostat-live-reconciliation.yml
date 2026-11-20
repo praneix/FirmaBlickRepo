@@ -4,6 +4,7 @@ on:
     branches: ['agent/eurostat-live-comparator-20261120']
     paths:
       - '.github/workflows/eurostat-live-reconciliation.yml'
+      - 'ingestion/eurostat.py'
   workflow_dispatch:
 permissions:
   contents: read
