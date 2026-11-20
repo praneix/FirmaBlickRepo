@@ -1,0 +1,129 @@
+name: CV1-03 Authentic Five-Sector Historical Preview QA
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/cv1-03-protected-history-qa.yml'
+      - 'scripts/build-verified-history-preview.py'
+      - 'scripts/verify-protected-history.py'
+      - 'tests/verified-historical-browser.mjs'
+      - 'site/historical*.mjs'
+      - 'docs/historical/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: authentic-history-qa-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+jobs:
+  real-data-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Baseline unit tests on intentionally unpublished public JSON
+        run: |
+          npm ci --ignore-scripts
+          npm run build
+          npm test
+          python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Download original authenticated Destatis acquisition (unpublished)
+        uses: actions/download-artifact@v4
+        with:
+          name: genesis-extended-original-unpublished-44702970458
+          run-id: 44702970458
+          repository: praneix/FirmaBlickRepo
+          github-token: ${{ github.token }}
+          path: artifacts/source/destatis
+      - name: Download independent Eurostat original acquisition (unpublished)
+        uses: actions/download-artifact@v4
+        with:
+          name: eurostat-live-unpublished-44703565920
+          run-id: 44703565920
+          repository: praneix/FirmaBlickRepo
+          github-token: ${{ github.token }}
+          path: artifacts/source/eurostat
+      - name: Verify authentic source objects and generate protected-only data
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 scripts/build-verified-history-preview.py
+          python3 scripts/verify-protected-history.py --manifest /tmp/fb-history-source-manifest.json
+          node scripts/security-audit.mjs
+          node scripts/beta-release-gate.mjs --assert-blocked
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          h=json.loads(Path('site/data/historical.json').read_text())
+          assert len(h['series']) == 5
+          assert sum(len(s['observations']) for s in h['series']) == 705
+          assert h['public_release_authorized'] is False
+          assert all(s['publication_approved'] is False for s in h['series'])
+          print('705_AUTHENTIC_ORIGINAL_INDICES_VALIDATED_WITH_NO_PUBLIC_RELEASE')
+          PY
+      - name: Negative test — unauthorized historical release is refused
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp site/data/historical.json /tmp/fb-original-preview.json
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('site/data/historical.json')
+          data=json.loads(p.read_text());data['series'][0]['publication_approved']=True
+          p.write_text(json.dumps(data))
+          PY
+          if python3 scripts/verify-protected-history.py > /tmp/fb-tamper-out.txt 2>&1; then
+            echo '::error::Unauthorised public-release bit was accepted'
+            exit 2
+          fi
+          cp /tmp/fb-original-preview.json site/data/historical.json
+          cmp -s /tmp/fb-original-preview.json site/data/historical.json
+          echo 'UNAUTHORISED_PUBLICATION_MUTATION_BLOCKED'
+      - name: Rebuild source-backed preview without publishing any artifact
+        run: |
+          npm run build
+          npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Real 705-observation Chromium QA desktop and mobile
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory dist >/tmp/fb-http.log 2>&1 &
+          server=$!
+          trap 'kill "$server" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi
+            sleep 1
+          done
+          node tests/verified-historical-browser.mjs
+      - name: Verify original candidate status and remove sensitive artifacts
+        if: always()
+        shell: bash
+        run: |
+          set -eu
+          rm -rf artifacts/source dist/data/historical.json
+          git show HEAD:site/data/historical.json > site/data/historical.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('site/data/historical.json').read_text())
+          assert d['status']=='unavailable' and d['series']==[]
+          print('SOURCE_ARCHIVES_REMOVED_AND_PUBLIC_REPO_HISTORICAL_DATA_RESTORED_UNAVAILABLE')
+          PY
+      - name: Record sanitized evidence
+        if: success()
+        run: |
+          echo "## CV1-03 protected-only real-source QA" >> "$GITHUB_STEP_SUMMARY"
+          echo 'Five sectors and 705 exact original observations verified against distinct official raw sources.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Chromium desktop/mobile chart, citation and table tests passed on ephemeral source-backed build.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'No ZIP or generated JSON uploaded, committed, published or deployed.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Still requires owner licensing approval and authenticated Vercel preview verification.' >> "$GITHUB_STEP_SUMMARY"
