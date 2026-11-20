@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0.0",
+  "release_id": "firmablick-v1-beta-candidate",
+  "release_state": "BLOCKED",
+  "git_sha": null,
+  "branch": "agent/prototype-2-44525788542",
+  "historical_data": {
+    "status": "unavailable",
+    "source_dataset_ids": [
+      "42153-0001",
+      "42153-0002"
+    ],
+    "source_vintage_utc": null,
+    "original_source_sha256": [],
+    "golden_spot_checks": {
+      "status": "pending",
+      "checks": [],
+      "independent_reviewer": null
+    }
+  },
+  "aggregate_forecast": {
+    "status": "unpublished",
+    "model_id": "fb-manufacturing-seasonal-damped-trend",
+    "model_version": "1.0.0",
+    "benchmark_evidence": null,
+    "holdout_approved": false,
+    "publication_approved": false
+  },
+  "sector_forecasts": {
+    "release_flags": {
+      "20": false,
+      "24": false,
+      "28": false,
+      "29": false
+    }
+  },
+  "ci": {
+    "run_url": null,
+    "head_sha": null,
+    "unit_tests": "pending",
+    "chromium_desktop": "pending",
+    "chromium_mobile": "pending",
+    "security_checks": "pending"
+  },
+  "preview": {
+    "url": null,
+    "review_status": "pending",
+    "reviewer": null,
+    "approved_at": null
+  },
+  "manual_approval": {
+    "approver": null,
+    "approved_at": null,
+    "approval_scope": null
+  },
+  "deploy": {
+    "production_authorized": false,
+    "dns_authorized": false
+  },
+  "blockers": [
+    "GENESIS official source token and independent golden value comparison",
+    "Verified and source-dated five-sector historical release",
+    "Flagship forecast holdout validation and publication authorization",
+    "Direct protected Vercel preview assessment",
+    "Explicit owner production/DNS approval"
+  ],
+  "privacy": {
+    "no_customer_data": true,
+    "no_api_credentials_in_client": true,
+    "analytics_enabled": false
+  },
+  "evidence_policy": "CI and release-gate must independently verify underlying artifacts; declarative success claims alone are not sufficient."
+}
