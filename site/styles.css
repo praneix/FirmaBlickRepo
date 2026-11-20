@@ -145,3 +145,19 @@ footer { background: #0b1e2d; color: var(--ivory); padding-top: 48px; }
   .historical-body { padding: 16px; }
   .historical-table-wrap { max-height: 330px; }
 }
+
+/* Issue 15: accessible, session-ephemeral deterministic scenario instruction panel */
+.ask-panel { margin-top: 22px; padding: clamp(16px,3vw,28px); background: var(--ivory); color: var(--navy); border-radius: 4px; border-top: 4px solid var(--red); }
+.ask-panel .eyebrow { color: var(--muted); }
+.ask-panel h3 { margin: .25rem 0 .6rem; }
+.ask-panel #ask-help { max-width: 85ch; }
+.ask-panel label { display: block; font-weight: 700; margin: .5rem 0; }
+.ask-entry { display: flex; align-items: stretch; gap: 12px; }
+.ask-entry input { flex: 1; min-width: 0; }
+.ask-entry button { flex: 0 0 auto; min-height: 44px; }
+#ask-result { min-height: 2.5em; padding: .75rem 1rem; background: #f3f1ec; margin: 18px 0 12px; border-left: 3px solid #8795a3; }
+#ask-result[data-result="confirmed"] { border-color: #247654; }
+#ask-result[data-result="clarification"] { border-color: var(--red); }
+.assumptions { padding: 12px 16px; background: white; border: 1px solid var(--border); font-size: .9rem; }
+.ask-disclaimer { color: var(--muted); font-size: .82rem; margin: 0; }
+@media(max-width:740px) { .ask-entry { flex-direction: column; }.ask-entry button { width: 100%; } }
