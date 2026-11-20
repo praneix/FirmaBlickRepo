@@ -47,3 +47,9 @@ The preliminary five-industry source registry, versioned observation schema, and
 The current displayed simulator remains **illustrative**. No Destatis/Eurostat production ingestion or live forecast is yet connected. The source contract includes no actual statistical observations, access credentials or private customer information.
 
 `npm run build && npm test` runs the source-contract regression suite alongside the existing website tests. Domain-specific source validation is implemented in `scripts/validate-observation.mjs`. A complete Draft 2020-12 JSON Schema validation engine and live provider integration will be added in the ingestion phase.
+
+
+## Official-data ingestion prototype (Issue #8)
+A read-only, standard-library Destatis GENESIS client now exists in [ingestion/genesis.py](ingestion/genesis.py). It uses authenticated **POST** requests to fetch tables 42153-0001 and 42153-0002, inspect ZIP-wrapped flat-file CSV and source classifications, and record SHA-256-checked local raw source snapshots. It does **not** publish official observations or connect live data to the public website.
+
+Read [the ingestion integration guide](docs/genesis-ingestion.md) for commands, token requirements, tests and live API limitations. CI executes Python official-format synthetic-fixture regression tests and asserts that no-token execution fails with an actionable error. Actual API connectivity requires a personal GENESIS token and is deliberately opt-in.
