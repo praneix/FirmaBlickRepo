@@ -9,7 +9,7 @@ The target remains monthly Germany manufacturing industrial-production volume in
 The `forecast/flagship.py` model `fb-manufacturing-seasonal-damped-trend` version 1.0.0 uses:
 - **Last-year monthly seasonality**: observed index for the same calendar month in the latest complete 12-month cycle.
 - **Local annual change**: mean(index of latest 12 months) minus mean(index of the preceding 12 months).
-- **Damped forward trend**: annual change multiplied by the geometric sum of powers of a predeclared factor `0.85` up to the forecast horizon. Negative index projections are clipped to zero.
+- **Damped forward trend**: annual change multiplied by the ratio `(1 − 0.85^h) / (1 − 0.85^12)`, so a 12-month projection incorporates exactly one annual increment while shorter horizons use damped fractions. Negative index projections are clipped to zero.
 - **12 forecast horizons**: one month each through month 12. No unconditional extension to 2030. No model tuning, fitted random seed, external statistical package, exogenous energy data or training on Eurostat.
 
 The candidate is a deliberately interpretable **baseline proposal**, not an empirically superior or statistically calibrated flagship until its complete validation plan passes.
@@ -18,7 +18,7 @@ The candidate is a deliberately interpretable **baseline proposal**, not an empi
 `forecast_package(history, origin_month, origin_at, source)` requires a complete history of timestamped `Observation` records, plus an explicit immutable GENESIS table/industry/adjustment/base context. It returns:
 - Model ID, semantic version, fixed parameters and scenario ID.
 - Origin month and UTC time, observed end month, 12 target months and horizons.
-- Input source acquisition UUID, raw ZIP SHA-256, source-adjustment/index base, latest admissible source vintage, forecast-input SHA-256.
+- Input source acquisition UUID, raw ZIP SHA-256, source-adjustment/index base, latest admissible source vintage, forecast-input SHA-256 calculated exclusively from source observations that existed at the origin cutoff.
 - A distinct projection value for every future month; intervals are either bounded diagnostic quantiles or explicit null with calibration count.
 - `type=forecast_diagnostic_not_official_observation`, `official_source_certified=false`, `publication_approved=false`, with a written release-block reason.
 - A withheld 2030 trajectory with a clear longer-horizon validation explanation.
