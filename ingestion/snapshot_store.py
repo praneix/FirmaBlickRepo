@@ -81,10 +81,14 @@ def require_utc_timestamp(value: str) -> str:
     if not isinstance(value, str) or not UTC_TIMESTAMP.fullmatch(value):
         raise SnapshotError("Timestamp must be an ISO-8601 UTC value ending in Z.")
     try:
-        datetime.fromisoformat(value.replace("Z", "+00:00"))
-    except ValueError as exc:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if parsed.utcoffset().total_seconds() != 0:
+            raise ValueError("non-UTC timezone")
+    except (ValueError, AttributeError) as exc:
         raise SnapshotError("Invalid UTC timestamp.") from exc
-    return value
+    # Canonical precision avoids incorrect lexical as-of comparisons when
+    # a query uses whole seconds but acquisition times have microseconds.
+    return parsed.isoformat(timespec="microseconds").replace("+00:00", "Z")
 
 
 def canonical_json(value: object) -> str:
