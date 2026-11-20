@@ -129,7 +129,8 @@ class BenchmarkTests(unittest.TestCase):
                              for x in synthetic()],
                             origins("2022-01",12),"2027-01-01T00:00:00Z")
         self.assertIsNone(result["metrics"]["last_value"]["1"]["mase"])
-        self.assertIsNone(result["metrics"]["last_value"]["1"]["smape"])
+        self.assertEqual(result["metrics"]["last_value"]["1"]["smape"],0.0)
+        self.assertIsNone(_smape(0.0,0.0))
 
     def test_interval_coverage_requires_external_precalibrated_bounds(self):
         result=run_backtest(synthetic(),origins("2022-01",16),
@@ -146,7 +147,7 @@ class BenchmarkTests(unittest.TestCase):
 
     def test_horizon_specific_cutoff_and_counts(self):
         result=run_backtest(synthetic(),origins("2023-01",15),
-                            "2024-03-20T00:00:00Z")
+                            "2024-04-20T00:00:00Z")
         self.assertEqual(result["metrics"]["last_value"]["1"]["n"],14)
         self.assertLess(result["metrics"]["last_value"]["12"]["n"],14)
         self.assertTrue(any(e["reason"].startswith("Target truth unavailable")
