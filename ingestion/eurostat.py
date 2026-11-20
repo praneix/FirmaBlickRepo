@@ -320,14 +320,15 @@ class EurostatArchive:
         return output
 
 
-def reconcile(destatis, eurostat, *, absolute_tolerance=0.2):
+def reconcile(destatis, eurostat, *, absolute_tolerance=0.2, mapping_verified=False):
     """Compare already normalized observations. Report every excluded pair and reason.
 
     Never automatically rebase, reclassify, modify or publish Destatis data.
     """
-    if not isinstance(absolute_tolerance,(float,int)) or not 0 <= absolute_tolerance <= 10:
+    if isinstance(absolute_tolerance,bool) or not isinstance(absolute_tolerance,(float,int)) or not 0 <= absolute_tolerance <= 10:
         raise EurostatError("Invalid absolute index tolerance.")
     result={"compared":[],"excluded":[],"publication_approved":False,
+            "classification_mapping_verified": mapping_verified is True,
             "tolerance_index_points":absolute_tolerance}
     index={}
     for item in eurostat:
@@ -350,7 +351,7 @@ def reconcile(destatis, eurostat, *, absolute_tolerance=0.2):
             reason=None
             if e.get("geo")!=d.get("geo") or e.get("frequency")!=d.get("frequency"):
                 reason="geography_or_frequency_mismatch"
-            elif e.get("classification_revision")!="NACE_REV2" or d.get("classification_revision")!="WZ2008":
+            elif mapping_verified is not True or e.get("classification_revision")!="NACE_REV2" or d.get("classification_revision")!="WZ2008":
                 reason="classification_mapping_not_verified"
             elif e.get("unit")!=d.get("unit") or e.get("base_year")!=d.get("base_year"):
                 reason="index_unit_or_base_mismatch"
@@ -363,6 +364,16 @@ def reconcile(destatis, eurostat, *, absolute_tolerance=0.2):
             if reason:
                 reasons.add(reason);continue
             diff=round(float(e["value"])-float(d["value"]),10)
+            # The same sector/month/adjustment/base must be unique.
+            duplicates = [item for item in options if item.get("geo")==e.get("geo")
+                          and item.get("frequency")==e.get("frequency")
+                          and item.get("classification_revision")==e.get("classification_revision")
+                          and item.get("unit")==e.get("unit")
+                          and item.get("base_year")==e.get("base_year")
+                          and item.get("adjustment")==e.get("adjustment")]
+            if len(duplicates) > 1:
+                reasons.add("ambiguous_comparator_duplicate")
+                continue
             result["compared"].append({"key":key,"destatis":d["value"],"eurostat":e["value"],
                                        "difference_index_points":diff,
                                        "assessment":"exact" if diff==0 else ("within_tolerance" if abs(diff)<=absolute_tolerance else "deviation"),
