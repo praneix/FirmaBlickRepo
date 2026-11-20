@@ -146,13 +146,22 @@ def _smape(a:float,f:float):
 
 def _metrics(records):
     if not records:return {"n":0,"mae":None,"bias":None,"mase":None,"smape":None,
-                           "interval_coverage":None,"interval_count":0,"mean_interval_width":None}
+                           "interval_coverage":None,"interval_count":0,"mean_interval_width":None,
+                           "early_mae":None,"late_mae":None,"mae_stability_delta":None}
     errors=[r["forecast"]-r["actual"] for r in records]
     smapes=[r["smape"] for r in records if r["smape"] is not None]
     mase=[r["mase"] for r in records if r["mase"] is not None]
     intervals=[r for r in records if r["lower"] is not None and r["upper"] is not None]
+    ordered=sorted(records,key=lambda r:(r["origin"],r["target"]))
+    split=len(ordered)//2
+    first=ordered[:split]
+    second=ordered[split:]
+    early_mae=statistics.mean(abs(r["forecast"]-r["actual"]) for r in first) if first else None
+    late_mae=statistics.mean(abs(r["forecast"]-r["actual"]) for r in second) if second else None
     return {
       "n":len(records),"mae":statistics.mean(abs(e) for e in errors),
+      "early_mae":early_mae,"late_mae":late_mae,
+      "mae_stability_delta":(late_mae-early_mae) if early_mae is not None and late_mae is not None else None,
       "bias":statistics.mean(errors),
       "mase":statistics.mean(mase) if mase else None,
       "smape":statistics.mean(smapes) if smapes else None,
