@@ -2,3 +2,8 @@ dist/
 node_modules/
 .vercel/
 /stitch-export/
+
+# GENESIS raw downloads and local acquisition artifacts
+/artifacts/
+/ingestion/__pycache__/
+/tests/__pycache__/
