@@ -76,7 +76,8 @@ test('pure illustrative engine changes index but never reports official data',()
  const high=calculateIllustrative({...base(),energy:3});
  const low=calculateIllustrative({...base(),energy:-3});
  assert.equal(initial.length,5);assert.equal(initial[0].index,100);
- assert.equal(initial[1].index,growth[1].index);
+ const sameStart=calculateIllustrative({...base(),start:2028});
+ assert.equal(sameStart[1].index,growth[1].index);
  assert.ok(growth[4].index>initial[4].index);
  assert.ok(low[4].index>high[4].index);
  assert.deepEqual(calculateIllustrative(base()),initial);
