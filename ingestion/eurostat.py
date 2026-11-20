@@ -379,3 +379,37 @@ def reconcile(destatis, eurostat, *, absolute_tolerance=0.2):
     result["summary"]={"compared":len(result["compared"]),"excluded":len(result["excluded"]),
                        "deviations":sum(x["assessment"]=="deviation" for x in result["compared"])}
     return result
+
+def cli(argv=None):
+    """Opt-in live Eurostat retrieval; never publishes or touches Destatis."""
+    import argparse
+    parser=argparse.ArgumentParser(description="Eurostat industrial production comparator snapshots")
+    parser.add_argument("command",choices=("fetch","history"))
+    parser.add_argument("--output",default="artifacts/eurostat")
+    parser.add_argument("--since",default="2021-01")
+    options=parser.parse_args(argv)
+    try:
+        arc=EurostatArchive(options.output)
+        if options.command=="history":
+            print(json.dumps(arc.events(),indent=2))
+        else:
+            if not re.fullmatch(r"\d{4}-(?:0[1-9]|1[0-2])",options.since):
+                raise EurostatError("Invalid start month.")
+            raw,http,params=fetch(params={"sinceTimePeriod":options.since})
+            parsed=json.loads(raw)
+            rows=normalize(parsed)
+            observed={x["industry_code"] for x in rows}
+            if observed!=CODES:
+                raise EurostatError("Required five industry series are incomplete.")
+            event=arc.archive(raw,http,params)
+            print(json.dumps({"status":"raw_snapshot_archived","event":event,
+                              "series_codes":sorted(observed),
+                              "records":len(rows),"published":False},indent=2))
+        return 0
+    except (EurostatError,OSError,ValueError) as exc:
+        print("Eurostat ingestion blocked: "+str(exc),file=__import__("sys").stderr)
+        return 2
+
+
+if __name__=="__main__":
+    raise SystemExit(cli())
