@@ -6,6 +6,8 @@ on:
       - 'tests/**'
       - 'ingestion/**'
       - 'forecast/**'
+      - 'release/**'
+      - 'docs/beta-release.md'
       - 'docs/forecast-evaluation.md'
       - 'docs/manufacturing-forecast.md'
       - 'docs/sector-forecast-gates.md'
@@ -34,6 +36,10 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run build
       - run: npm test
+      - name: Client privacy and credential audit
+        run: node scripts/security-audit.mjs
+      - name: Fail-closed beta release manifest assertion
+        run: node scripts/beta-release-gate.mjs --assert-blocked
       - name: Python GENESIS client regression suite
         run: python3 -m unittest discover -s tests -p 'test_*.py' -v
       - name: Credential-free provider gate
@@ -44,6 +50,17 @@ jobs:
           set -e
           test "$status" -eq 2
           grep -q 'GENESIS_TOKEN is required' /tmp/genesis-err.log
+      - name: Generate non-authorizing versioned release evidence
+        env:
+          FIRMABLICK_TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/beta-release-report.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: firma-beta-candidate-evidence
+          path: release-artifacts/
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Confirm generated files
         run: |
           test -f dist/index.html
@@ -77,6 +94,7 @@ jobs:
           done
           node tests/historical-browser.mjs
           node tests/scenario-browser.mjs
+          node tests/beta-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
