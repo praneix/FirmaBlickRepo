@@ -1,0 +1,108 @@
+name: GENESIS archived-source normalization (no secret; no publication)
+on:
+  push:
+    branches: ['agent/genesis-real-format-normalization-20261120']
+    paths:
+      - '.github/workflows/genesis-archived-source-qa.yml'
+permissions:
+  contents: read
+  actions: read
+  issues: write
+jobs:
+  validate-real-archived-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/genesis-real-format-normalization-20261120
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download independently acquired official source archive
+        uses: actions/download-artifact@v4
+        with:
+          name: genesis-official-raw-discovery-44693586709
+          run-id: 44693586709
+          repository: praneix/FirmaBlickRepo
+          github-token: ${{ github.token }}
+          path: artifacts
+      - name: Verify real-source normalization with observed table metadata
+        id: normalize
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from ingestion.snapshot_store import SnapshotStore
+          from ingestion.normalize import run_quality_gate
+          source=Path('artifacts/genesis/firmablick/v1')
+          if not (source/'acquisitions.sqlite3').is_file():
+              raise SystemExit('Authenticated raw source artifact not downloaded.')
+          profile={
+            'value_variable_code':'PRO101',
+            'adjustment_variable_code':'WERT03',
+            'adjustment_attribute_code':'WERTORG',
+            'adjustment':'original',
+            'expected_base_year':2021,
+            'quality_map':{'':{'observation_type':'official',
+                                 'source_status_flags':[],
+                                 'missing_reason':None}},
+            'confirmed_against_official_metadata':True
+          }
+          store=SnapshotStore(Path('artifacts/genesis'))
+          results=run_quality_gate(store,{'42153-0001':profile,'42153-0002':profile})
+          print('Authenticated snapshot: '+json.dumps(results))
+          if results['status']!='VALIDATED_UNPUBLISHED':
+              raise SystemExit('Quality gate quarantined authentic source: '+results.get('reason_code','unknown'))
+          report=json.loads(Path(results['path']).read_text())
+          obs=[x['observation'] for x in report['results']]
+          by={}
+          for row in obs:
+              by.setdefault(row['industry_code'],[]).append(row)
+              if row['source_status_flags']!=['source_quality_field_not_provided']:
+                  raise SystemExit('Missing explicit official quality-field limitation.')
+          expected={'C','20','24','28','29'}
+          if set(by)!=expected or any(len(v)!=33 for v in by.values()):
+              raise SystemExit('Official source monthly series completeness mismatch.')
+          if any(x['period']<'2024-01' or x['period']>'2026-09' for x in obs):
+              raise SystemExit('Period outside authenticated source collection.')
+          safe={'status':results['status'],'publication_approved':False,
+            'observation_count':len(obs),'by_sector':{k:len(v) for k,v in by.items()},
+            'period_start':'2024-01','period_end':'2026-09',
+            'base_year':2021,'adjustment':'original',
+            'source_quality':'no separate quality column in acquired GENESIS CSV',
+            'golden_value_parity':'pending independent source comparison'}
+          Path('artifacts/official-source-normalization-evidence.json').write_text(json.dumps(safe,indent=2))
+          print('OFFICIAL_FORMAT_NORMALIZATION_PASS: '+json.dumps(safe))
+          PY
+      - name: Preserve unpublished result and provenance
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-normalization-unpublished-${{ github.run_id }}
+          path: |
+            artifacts/official-source-normalization-evidence.json
+            artifacts/genesis/firmablick/v1/quality/
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Record issue acceptance state
+        if: always()
+        continue-on-error: true
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FB_NORMALIZATION: ${{ steps.normalize.outcome }}
+        run: |
+          {
+            echo "### Live authenticated source normalization (no publication)"
+            echo ""
+            echo "Run: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "Normalizer: ${FB_NORMALIZATION}"
+            echo "Official raw archive source: workflow 44693586709 (downloaded without API token)"
+            echo ""
+            echo "Officially published web-page value parity and quality/revision semantics still require separate acceptance."
+          } > /tmp/normalization-result.md
+          gh issue comment 10 --repo "${GITHUB_REPOSITORY}" --body-file /tmp/normalization-result.md
