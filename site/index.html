@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="./styles.css">
   <script type="module" src="./site.mjs"></script>
   <script type="module" src="./historical.mjs"></script>
+  <script type="module" src="./sector-forecast-status.mjs"></script>
   <script type="module" src="./scenario-command.mjs"></script>
 </head>
 <body>
@@ -106,6 +107,7 @@
           <svg id="historical-chart" viewBox="0 0 700 230" role="img" aria-label="Monthly historical industrial production index. See the data table for exact values."></svg>
         </figure>
         <p class="historical-meta" id="historical-provenance">Source verification pending.</p>
+        <p class="historical-note" id="sector-forecast-status" role="status" aria-live="polite">Forecast status: historical observations only. Independent sector forecasting approval is pending.</p>
         <details class="historical-details" open>
           <summary>View historical monthly values</summary>
           <div class="historical-table-wrap"><table>
