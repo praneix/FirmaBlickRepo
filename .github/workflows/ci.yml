@@ -8,6 +8,7 @@ on:
       - 'data-contracts/**'
       - 'docs/genesis-ingestion.md'
       - 'docs/snapshot-store.md'
+      - 'docs/normalization-quality.md'
       - 'scripts/**'
       - 'package*.json'
       - 'vercel.json'
