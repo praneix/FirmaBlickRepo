@@ -254,7 +254,7 @@ class EurostatArchive:
         validate_jsonstat(payload)
         if not isinstance(response, dict) or not isinstance(params, dict):
             raise EurostatError("Invalid response/request metadata.")
-        if not set(params).issubset({"geo","freq","indic_bt","lang","sinceTimePeriod","untilTimePeriod"}):
+        if not set(params).issubset({"geo","freq","indic_bt","lang","sinceTimePeriod","untilTimePeriod","nace_r2","s_adj","unit"}):
             raise EurostatError("Unsafe Eurostat request parameter.")
         if params.get("geo") != "DE" or params.get("freq") != "M" or params.get("indic_bt") != "PRD":
             raise EurostatError("Invalid response scope.")
