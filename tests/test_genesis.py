@@ -29,18 +29,18 @@ COLUMNS = [
 ]
 
 
-def fixture_zip(table, *, missing=(), inconsistent_base=False, ambiguous=False, malformed=False):
+def fixture_zip(table, *, missing=(), inconsistent_base=False, ambiguous=False, malformed=False, misleading_nonindustry=False):
     codes = ["C"] if table == "42153-0001" else ["20", "24", "28", "29"]
     rows = []
     for i, code in enumerate(codes):
         if code in missing:
             continue
         first = f"WZ08-{code}"
-        second = ("WZ08-24" if code == "28" and ambiguous else "ORIG")
+        second = ("WZ08-24" if code == "28" and ambiguous else ("20" if misleading_nonindustry else "ORIG"))
         row = [
             "42153", "Synthetic index fixture", "2026M01", "January 2026",
             "2026-01", "WZ08", "WZ 2008", first, f"Code {code}",
-            "AJUST", "Adjustment", second, "Original data",
+            "WZ08" if code == "28" and ambiguous else "AJUST", "Adjustment", second, "Original data",
             f"{90+i},5", "2020=100" if inconsistent_base and code == "29" else "2021=100",
             "PRODIDX", "Production index", "p" if code == "29" else "",
         ]
@@ -105,6 +105,29 @@ class ClientTests(unittest.TestCase):
         self.assertNotIn(b"test-only-token", request.data)
         self.assertEqual(request.full_url, BASE_URL + "helloworld/logincheck")
 
+
+    def test_official_textual_logincheck_success_is_recognized(self):
+        # Destatis' own Python example returns Status as a human-readable string.
+        reply = json.dumps({"Status": "Sie wurden erfolgreich an- und abgemeldet!",
+                            "Username": "registered_account"}).encode()
+        client = GenesisClient("test", transport=lambda request, timeout: FakeHTTP(reply))
+        self.assertEqual(client.logincheck()["Username"], "registered_account")
+        failed = json.dumps({"Status": "Zugangsdaten abgelehnt", "Username": "registered_account"}).encode()
+        with self.assertRaisesRegex(GenesisError, "authentication was not confirmed"):
+            GenesisClient("test", transport=lambda request, timeout: FakeHTTP(failed)).logincheck()
+
+    def test_http_404_genesis_auth_status_is_credential_error(self):
+        def bad(request, timeout):
+            raise HTTPError(request.full_url, 404, "Not found", {},
+                            io.BytesIO(status_response(2)))
+        client = GenesisClient("invalid", transport=bad)
+        with self.assertRaisesRegex(GenesisError, "authentication rejected"):
+            client.logincheck()
+
+    def test_partial_status_code_one_is_not_accepted(self):
+        with self.assertRaisesRegex(GenesisError, "status 1"):
+            decode_api_json(status_response(1), "metadata")
+
     def test_json_status_errors_are_not_successful_downloads(self):
         with self.assertRaisesRegex(GenesisError, "status 2"):
             decode_api_json(status_response(2), "test")
@@ -168,6 +191,13 @@ class ShapeAndCoverageTests(unittest.TestCase):
     def test_ambiguous_dimension_codes_fail(self):
         with self.assertRaisesRegex(GenesisError, "Ambiguous"):
             inspect_ffcsv(fixture_zip("42153-0002", ambiguous=True), "42153-0002")
+
+
+    def test_non_industry_attributes_cannot_be_misclassified(self):
+        inventory = inspect_ffcsv(
+            fixture_zip("42153-0002", misleading_nonindustry=True), "42153-0002")
+        self.assertEqual(inventory["covered_codes"], ["20", "24", "28", "29"])
+        self.assertEqual(inventory["matched_rows"], 4)
 
     def test_unexpected_csv_shape_fails(self):
         with self.assertRaisesRegex(GenesisError, "missing value/time"):
