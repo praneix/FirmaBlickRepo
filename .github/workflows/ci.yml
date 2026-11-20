@@ -75,6 +75,7 @@ jobs:
             sleep 1
           done
           node tests/historical-browser.mjs
+          node tests/scenario-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
