@@ -51,7 +51,10 @@ def point_forecast(values:list[float], horizon:int, *, damping:float=DEFAULT_DAM
         raise ForecastError("Damping must be a fixed number strictly between 0 and 1.")
     annual_change=statistics.mean(values[-12:])-statistics.mean(values[-24:-12])
     previous_year=values[-12+(horizon-1)]
-    trend=annual_change*(damping*(1-damping**horizon)/(1-damping))
+    # The previous 12-month mean change represents one year of growth.
+    # Normalise the damped cumulative weights so h=12 equals exactly that
+    # year-on-year increment; h=1 uses a corresponding fraction.
+    trend=annual_change*((1-damping**horizon)/(1-damping**12))
     return max(0.0,float(previous_year+trend))
 
 
@@ -140,9 +143,10 @@ def forecast_package(history:list[Observation], *, origin_month:str,
        "origin_month":origin_month,"origin_at":origin_at,
        "source_sha256":source["raw_sha256"],
        "source_acquisition":source["acquisition_id"],
-       "vintages":[{"month":v.month,"value":v.value,
-                    "available_at":v.available_at,"source_vintage":v.source_vintage}
-                   for v in history],
+       "vintages":[{"month":row.month,"value":row.value,
+                    "available_at":row.available_at,"source_vintage":row.source_vintage}
+                   for month,row in sorted(as_of(history,origin_at).items())
+                   if _month_number(month)<=_month_number(origin_month)],
        "damping":damping}
     fingerprint=hashlib.sha256(json.dumps(seed_context,sort_keys=True,
         separators=(",",":"),allow_nan=False).encode()).hexdigest()
