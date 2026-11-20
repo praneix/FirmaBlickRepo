@@ -1,0 +1,61 @@
+name: GENESIS extended history acquisition (private evidence, no publication)
+on:
+  push:
+    branches: ['agent/genesis-extended-history-20261120']
+    paths:
+      - '.github/workflows/genesis-extended-history.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  extended-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Confirm approved secret is present without logging it
+        env:
+          GENESIS_TOKEN: ${{ secrets.GENESIS_TOKEN }}
+        run: |
+          if [ -z "${GENESIS_TOKEN:-}" ]; then echo 'GENESIS_TOKEN missing from GitHub Actions secret'; exit 2; fi
+      - name: Download authentic 2015–2026 historical source, preserve all raw versions
+        env:
+          GENESIS_TOKEN: ${{ secrets.GENESIS_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 -m ingestion.genesis fetch --startyear 2015 --endyear 2026 --output artifacts/genesis > /tmp/extended-source-safe-inventory.json
+          python3 - <<'PY'
+          import json,hashlib,sqlite3
+          from pathlib import Path
+          p=Path('/tmp/extended-source-safe-inventory.json')
+          doc=json.loads(p.read_text())
+          if doc['status']!='discovered_and_downloaded' or set(doc['coverage'])!={'C','20','24','28','29'}:
+              raise SystemExit('Missing target sector or unsuccessful acquisition')
+          root=Path('artifacts/genesis/firmablick/v1')
+          conn=sqlite3.connect(root/'acquisitions.sqlite3')
+          names=[x[0] for x in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")]
+          if not names: raise SystemExit('Acquisition database empty')
+          data={'status':'raw_extended_acquisition_only','published':False,
+                'requested_years':[2015,2026],'covered_codes':doc['coverage'],
+                'datasets':[x['table'] for x in doc['snapshots']],
+                'snapshot_count':len(doc['snapshots']),
+                'digest_validation':'content_addressed_original_bytes_preserved',
+                'provider_status':'fetched_not_independently_value_verified'}
+          Path('artifacts/extended-source-safe-report.json').write_text(json.dumps(data,indent=2))
+          print(json.dumps(data))
+          PY
+      - name: Upload original source archive for subsequent independent review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: genesis-extended-original-unpublished-${{ github.run_id }}
+          path: |
+            artifacts/genesis/firmablick/v1/
+            artifacts/extended-source-safe-report.json
+          if-no-files-found: warn
+          retention-days: 30
