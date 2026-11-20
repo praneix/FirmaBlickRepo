@@ -23,10 +23,10 @@
 
 | Horizon | Candidate | Seasonal naive | Last value | Linear drift |
 |---|---:|---:|---:|---:|
-| 1 | 3.188 | 3.304 | see full reproducible evaluation | see full reproducible evaluation |
-| 3 | 3.110 | 3.304 | see full reproducible evaluation | see full reproducible evaluation |
-| 6 | 3.052 | 3.304 | 6.954 | 7.139 |
-| 12 | 3.823 | 3.304 | 3.304 | 3.571 |
+| 1 | 3.1903 | 3.3042 | 7.8292 | 7.8577 |
+| 3 | 3.1098 | 3.3042 | 7.9542 | 8.0371 |
+| 6 | 3.0523 | 3.3042 | 6.9542 | 7.1387 |
+| 12 | 3.8233 | 3.3042 | 3.3042 | 3.5707 |
 
 Rounded display figures are derived from the independent local diagnostic, not model-release results. Training-prefix absolute-residual intervals produced 100% apparent coverage in the 24 targets at each horizon, exceeding the predeclared 80–98% range and suggesting overly wide, unhelpful intervals. They are not independently statistically calibrated.
 
