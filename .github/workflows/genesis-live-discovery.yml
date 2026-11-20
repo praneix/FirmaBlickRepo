@@ -1,0 +1,88 @@
+name: GENESIS authenticated discovery (isolated, no publication)
+on:
+  push:
+    branches:
+      - 'agent/genesis-live-acceptance-20261120'
+    paths:
+      - '.github/workflows/genesis-live-discovery.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: firmablick-genesis-live-discovery
+  cancel-in-progress: false
+jobs:
+  trusted-live-discovery:
+    if: github.repository == 'praneix/FirmaBlickRepo' && github.ref == 'refs/heads/agent/genesis-live-acceptance-20261120'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout previously verified prototype code
+        uses: actions/checkout@v4
+        with:
+          ref: agent/prototype-2-44525788542
+          persist-credentials: false
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run existing API regression suite without credential
+        run: python -m unittest discover -s tests -p 'test_genesis.py' -v
+      - name: Confirm GENESIS secret is configured (without displaying it)
+        shell: bash
+        env:
+          GENESIS_TOKEN: ${{ secrets.GENESIS_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GENESIS_TOKEN:-}" ]; then
+            echo "::error::GENESIS_TOKEN is missing or unavailable to this workflow."
+            exit 2
+          fi
+          echo "GENESIS_TOKEN is available to the trusted workflow (value concealed)."
+      - name: Authenticate with GENESIS using POST
+        env:
+          GENESIS_TOKEN: ${{ secrets.GENESIS_TOKEN }}
+          PYTHONUNBUFFERED: '1'
+        run: python -m ingestion.genesis logincheck
+      - name: Download and inventory both official tables, no publication
+        env:
+          GENESIS_TOKEN: ${{ secrets.GENESIS_TOKEN }}
+          PYTHONUNBUFFERED: '1'
+        run: python -m ingestion.genesis fetch --startyear 2024 --endyear 2026 --output artifacts/genesis
+      - name: Produce safe discovery evidence and integrity proof
+        if: success()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,sqlite3
+          from pathlib import Path
+          root=Path('artifacts/genesis/firmablick/v1')
+          db=root/'acquisitions.sqlite3'
+          if not db.is_file(): raise SystemExit('Missing append-only acquisition database.')
+          with sqlite3.connect(db) as con:
+              rows=con.execute('SELECT dataset_id,acquisition_id,retrieved_at,inventory_json FROM acquisitions ORDER BY dataset_id').fetchall()
+          assert len(rows)==2,'Expected exactly two source acquisitions'
+          report={'status':'discovery_only_not_published','tables':[],'verified_raw_files':0}
+          for table,id,stamp,inventory_json in rows:
+              inv=json.loads(inventory_json)
+              report['tables'].append({'dataset_id':table,'retrieved_at':stamp,'covered_codes':inv.get('covered_codes'), 'base_year':inv.get('reported_index_base_year'),'matched_rows':inv.get('matched_rows'), 'discovery_only':inv.get('discovery_only')})
+          for p in root.glob('objects/*/*/*'):
+              if p.is_file():
+                  assert hashlib.sha256(p.read_bytes()).hexdigest()==p.name, 'Raw blob SHA256 mismatch'
+                  report['verified_raw_files']+=1
+          assert report['verified_raw_files']==4,'Expected two metadata and two ZIP blobs'
+          Path('artifacts/genesis-discovery-report.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+          print(json.dumps(report,indent=2))
+          PY
+      - name: Preserve official raw snapshot and safe discovery report
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: genesis-official-raw-discovery-${{ github.run_id }}
+          path: |
+            artifacts/genesis/firmablick/v1/
+            artifacts/genesis-discovery-report.json
+          if-no-files-found: error
+          retention-days: 30
