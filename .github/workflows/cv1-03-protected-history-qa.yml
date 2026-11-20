@@ -34,6 +34,7 @@ jobs:
           npm ci --ignore-scripts
           npm run build
           npm test
+          cp site/data/historical.json /tmp/fb-unpublished-site-history.json
           python3 -m unittest discover -s tests -p 'test_*.py' -v
       - name: Download original authenticated Destatis acquisition (unpublished)
         uses: actions/download-artifact@v4
@@ -111,7 +112,11 @@ jobs:
         run: |
           set -eu
           rm -rf artifacts/source dist/data/historical.json
-          git show HEAD:site/data/historical.json > site/data/historical.json
+          if [ -f /tmp/fb-unpublished-site-history.json ]; then
+            cp /tmp/fb-unpublished-site-history.json site/data/historical.json
+          else
+            printf '%s\\n' '{"schema_version":"1.0.0","status":"unavailable","generated_at":null,"reason":"Source verification remains unpublished.","series":[]}' > site/data/historical.json
+          fi
           python3 - <<'PY'
           import json
           from pathlib import Path
