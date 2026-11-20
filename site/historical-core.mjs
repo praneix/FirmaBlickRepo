@@ -31,6 +31,7 @@ export function verifyHistoricalPayload(payload) {
         typeof s.source_url !== 'string' || !s.source_url.startsWith('https://genesis.destatis.de/') ||
         !Array.isArray(s.observations) || !s.observations.length || s.observations.length > MAX_POINTS) throw Error('Historical series source certification incomplete.');
     seen.add(s.industry_code);
+    if (new Date(s.retrieved_at).getTime() > new Date(payload.generated_at).getTime()) throw Error('Source acquisition date is later than release.');
     const periods=new Set();
     let latest='';
     for(const item of s.observations){
@@ -42,6 +43,9 @@ export function verifyHistoricalPayload(payload) {
       periods.add(item.period);latest=item.period;
     }
   }
+  const bases=new Set(payload.series.map(s=>s.base_year));
+  const adjustments=new Set(payload.series.map(s=>s.adjustment));
+  if (bases.size!==1 || adjustments.size!==1) throw Error('Five-sector release mixes incompatible bases or adjustments.');
   return payload;
 }
 export function latestMonth(series){return series.observations.at(-1)?.period ?? 'Unavailable';}
@@ -67,4 +71,9 @@ export function svgSegments(points){
   }
   if(segment.length)lines.push(segment);
   return lines;
+}
+
+export function sourceAgeDays(retrievedAt, now = new Date()) {
+  const age = (now.getTime() - Date.parse(retrievedAt)) / 86400000;
+  return Number.isFinite(age) ? Math.max(0, Math.floor(age)) : Number.POSITIVE_INFINITY;
 }
