@@ -63,21 +63,6 @@
           <input id="energy" type="range" min="-3" max="3" step="0.1" value="0"><div class="range-labels" aria-hidden="true"><span>−3%</span><span>+3%</span></div>
           <label for="comparison">Compare with unadjusted scenario</label><select id="comparison"><option>None</option><option selected>Central</option><option>Resilience</option><option>Transformation</option></select>
         </form>
-        <div class="ask-panel" aria-labelledby="ask-title">
-          <p class="eyebrow">Explain a scenario · Deterministic command interface</p>
-          <h3 id="ask-title">Ask FirmaBlick</h3>
-          <p id="ask-help">Describe only the supported scenario settings in plain English. For example: “Use Transformation case. Assume 3% productivity from 2028. Hold energy prices constant. Compare against Resilience.” Supported parameters: scenario, annual productivity 0–5%, start 2027–2029, energy −3% to +3%, and comparison.</p>
-          <form id="ask-form" aria-describedby="ask-help scenario-note">
-            <label for="ask-command">Scenario instruction</label>
-            <div class="ask-entry">
-              <input id="ask-command" type="text" maxlength="450" autocomplete="off" spellcheck="false" placeholder="Set productivity to 3% from 2028" required>
-              <button class="button" type="submit">Apply scenario</button>
-            </div>
-          </form>
-          <p id="ask-result" role="status" aria-live="polite" aria-atomic="true">Specify supported settings to update the illustrative scenario. Unsupported or ambiguous commands will request clarification.</p>
-          <p id="scenario-assumptions" class="assumptions" aria-live="polite"></p>
-          <p class="ask-disclaimer">Rule-based commands only. Your text stays in this page and is not stored or sent to an AI service. Changes affect this synthetic scenario simulator only, never the separately gated official historical data or forecast engine.</p>
-        </div>
         <div class="chart-panel">
           <p class="eyebrow">Illustrative production index</p><h3>Industrial output trajectory</h3>
           <p id="readout" role="status"></p>
@@ -86,6 +71,22 @@
           <details><summary>View illustrative values by year</summary><table><caption>Production index, 2026 = 100</caption><thead><tr><th scope="col">Year</th><th scope="col">Adjusted</th><th scope="col">Comparison</th></tr></thead><tbody id="trajectory"></tbody></table></details>
         </div>
       </div>
+      <div class="ask-panel" aria-labelledby="ask-title">
+        <p class="eyebrow">Explain a scenario · Deterministic command interface</p>
+        <h3 id="ask-title">Ask FirmaBlick</h3>
+        <p id="ask-help">Describe only the supported scenario settings in plain English. For example: “Use Transformation case. Assume 3% productivity from 2028. Hold energy prices constant. Compare against Resilience.” Supported parameters: scenario, annual productivity 0–5%, start 2027–2029, energy −3% to +3%, and comparison.</p>
+        <form id="ask-form" aria-describedby="ask-help scenario-note">
+          <label for="ask-command">Scenario instruction</label>
+          <div class="ask-entry">
+            <input id="ask-command" type="text" maxlength="450" autocomplete="off" spellcheck="false" placeholder="Set productivity to 3% from 2028" required>
+            <button class="button" type="submit">Apply scenario</button>
+          </div>
+        </form>
+        <p id="ask-result" role="status" aria-live="polite" aria-atomic="true">Specify supported settings to update the illustrative scenario. Unsupported or ambiguous commands will request clarification.</p>
+        <p id="scenario-assumptions" class="assumptions" aria-live="polite"></p>
+        <p class="ask-disclaimer">Rule-based commands only. Your text stays in this page and is not stored or sent to an AI service. Changes affect this synthetic scenario simulator only, never the separately gated official historical data or forecast engine.</p>
+      </div>
+
     </div>
   </section>
   <section id="historical" class="section wrap historical" aria-labelledby="historical-title">
