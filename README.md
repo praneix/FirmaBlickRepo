@@ -53,3 +53,7 @@ The current displayed simulator remains **illustrative**. No Destatis/Eurostat p
 A read-only, standard-library Destatis GENESIS client now exists in [ingestion/genesis.py](ingestion/genesis.py). It uses authenticated **POST** requests to fetch tables 42153-0001 and 42153-0002, inspect ZIP-wrapped flat-file CSV and source classifications, and record SHA-256-checked local raw source snapshots. It does **not** publish official observations or connect live data to the public website.
 
 Read [the ingestion integration guide](docs/genesis-ingestion.md) for commands, token requirements, tests and live API limitations. CI executes Python official-format synthetic-fixture regression tests and asserts that no-token execution fails with an actionable error. Actual API connectivity requires a personal GENESIS token and is deliberately opt-in.
+
+
+## Immutable GENESIS acquisition snapshots (Issue #9)
+Raw official-source downloads are now archived in a local append-only, SHA-256 content-addressed store with SQLite relational retrieval history. Duplicate source bytes retain distinct retrieval events, while revised bytes retain older vintages. API consumers can query acquisition history as of an exact UTC instant and verify every referenced source object. Storage or integrity failure blocks acquisition completion. Source data remains unpublished and illustrative website forecasts are unchanged. See [storage architecture and acceptance tests](docs/snapshot-store.md). A dedicated FirmaBlick hosted storage environment must be separately configured before production use.
