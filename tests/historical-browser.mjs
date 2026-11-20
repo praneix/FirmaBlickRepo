@@ -28,6 +28,16 @@ try {
     assert.equal(await page.locator('#historical-sector option').count(),5);
     assert.match(await page.locator('#historical-status').innerText(),/unavailable/i);
     assert.equal(await page.locator('#historical-rows tr').count(),0);
+    assert.match(await page.locator('#sector-forecast-status').innerText(),/Historical observations only/i);
+    await page.locator('#historical-sector').selectOption('28');
+    assert.match(await page.locator('#sector-forecast-status').innerText(),/Machinery|Sector forecast unavailable/);
+    await page.locator('#historical-sector').selectOption('29');
+    assert.match(await page.locator('#sector-forecast-status').innerText(),/Automotive|Sector forecast unavailable/);
+    await page.locator('#historical-sector').selectOption('24');
+    assert.match(await page.locator('#sector-forecast-status').innerText(),/Basic metals|Sector forecast unavailable/);
+    await page.locator('#historical-sector').selectOption('20');
+    assert.match(await page.locator('#sector-forecast-status').innerText(),/Chemicals|Sector forecast unavailable/);
+    assert.equal(await page.locator('#historical-chart polyline').count(),0);
     assert.equal(await page.locator('#historical-chart polyline').count(),0);
     await page.locator('#historical-sector').selectOption('28');
     await page.locator('#historical-range').selectOption('12');
