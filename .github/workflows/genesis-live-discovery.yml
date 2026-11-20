@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  issues: write
 concurrency:
   group: firmablick-genesis-live-discovery
   cancel-in-progress: false
@@ -18,6 +19,7 @@ jobs:
     timeout-minutes: 18
     permissions:
       contents: read
+      issues: write
     steps:
       - name: Checkout previously verified prototype code
         uses: actions/checkout@v4
@@ -42,16 +44,19 @@ jobs:
           fi
           echo "GENESIS_TOKEN is available to the trusted workflow (value concealed)."
       - name: Authenticate with GENESIS using POST
+        id: login
         env:
           GENESIS_TOKEN: ${{ secrets.GENESIS_TOKEN }}
           PYTHONUNBUFFERED: '1'
         run: python -m ingestion.genesis logincheck
       - name: Download and inventory both official tables, no publication
+        id: fetch
         env:
           GENESIS_TOKEN: ${{ secrets.GENESIS_TOKEN }}
           PYTHONUNBUFFERED: '1'
         run: python -m ingestion.genesis fetch --startyear 2024 --endyear 2026 --output artifacts/genesis
       - name: Produce safe discovery evidence and integrity proof
+        id: proof
         if: success()
         shell: bash
         run: |
@@ -86,3 +91,30 @@ jobs:
             artifacts/genesis-discovery-report.json
           if-no-files-found: error
           retention-days: 30
+      - name: Record credential-safe outcome in Issue 10
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FB_LOGIN_RESULT: ${{ steps.login.outcome }}
+          FB_FETCH_RESULT: ${{ steps.fetch.outcome }}
+          FB_PROOF_RESULT: ${{ steps.proof.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "### Authenticated GENESIS discovery (no publication)"
+            echo ""
+            echo "Workflow: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "Commit: ${GITHUB_SHA}"
+            echo ""
+            echo "| Gate | Result |"
+            echo "| --- | --- |"
+            echo "| GENESIS token authentication | ${FB_LOGIN_RESULT} |"
+            echo "| Tables 42153-0001/0002 raw retrieval | ${FB_FETCH_RESULT} |"
+            echo "| Snapshot integrity and five-code coverage | ${FB_PROOF_RESULT} |"
+            echo ""
+            echo "All output is discovery-only; no statistical series, adjustment or publication is approved."
+            echo "The GENESIS secret itself is never recorded in this comment."
+          } > /tmp/firmablick-safe-status.md
+          gh issue comment 10 --repo "${GITHUB_REPOSITORY}" --body-file /tmp/firmablick-safe-status.md
