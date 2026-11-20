@@ -36,7 +36,7 @@ function draw(series){
   for(const o of rows){
     const tr=document.createElement('tr'),th=document.createElement('th'),td=document.createElement('td'),flag=document.createElement('td');
     th.scope='row';th.textContent=o.period;td.textContent=o.value===null?'Unavailable':o.value.toFixed(1);
-    flag.textContent=o.missing_reason || o.source_status_flags.join(', ') || 'Published';
+    flag.textContent=o.missing_reason || o.source_status_flags.join(', ') || 'Source status not specified';
     tr.append(th,td,flag);table.append(tr);
   }
   caption.textContent='Monthly production index ('+series.base_year+' = 100), '+series.adjustment.replaceAll('_',' ')+', Germany.';
@@ -44,14 +44,15 @@ function draw(series){
   const stale=age>120?' · Source vintage is '+age+' days old; displaying last validated release.':'';
   status.textContent=values.length? 'Latest source period: '+latestMonth(series)+' · '+values.length+' observed values in selected range.'+stale :
     'The selected months contain no published numeric observations.';
+  if (payload.status==='preview_validated') { status.textContent+=' Source values independently matched to Eurostat (705/705); source release-status flags are unavailable. Public publication remains blocked.'; }
   const link=document.createElement('a');link.href=series.source_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Destatis source';
   meta.replaceChildren(document.createTextNode(
     'Source: Destatis GENESIS '+series.dataset_id+' · WZ2008 '+series.industry_code+
-    ' · Acquired '+series.retrieved_at+' · Release verified · '),link);
+    ' · Acquired '+series.retrieved_at+(payload.status==='preview_validated'?' · Protected preview only; public release blocked · ':' · Release verified · ')),link);
 }
 let payload;
 function update(){
-  if(!payload||payload.status!=='validated'){notReady(payload?.reason||'Source verification is pending.');return;}
+  if(!payload||!['validated','preview_validated'].includes(payload.status)){notReady(payload?.reason||'Source verification is pending.');return;}
   const selected=payload.series.find(s=>s.industry_code===picker.value);
   if(!selected){notReady('Selected industry is absent from the validated release.');return;}
   draw(selected);
