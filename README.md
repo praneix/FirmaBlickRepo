@@ -57,3 +57,7 @@ Read [the ingestion integration guide](docs/genesis-ingestion.md) for commands, 
 
 ## Immutable GENESIS acquisition snapshots (Issue #9)
 Raw official-source downloads are now archived in a local append-only, SHA-256 content-addressed store with SQLite relational retrieval history. Duplicate source bytes retain distinct retrieval events, while revised bytes retain older vintages. API consumers can query acquisition history as of an exact UTC instant and verify every referenced source object. Storage or integrity failure blocks acquisition completion. Source data remains unpublished and illustrative website forecasts are unchanged. See [storage architecture and acceptance tests](docs/snapshot-store.md). A dedicated FirmaBlick hosted storage environment must be separately configured before production use.
+
+
+## Forecast benchmark evaluation (Issue #13)
+The local, standard-library [rolling-origin benchmark harness](forecast/benchmarks.py) implements last-value, seasonal-naive and drift forecast comparisons. The [predeclared evaluation and holdout protocol](forecast/evaluation-protocol.v1.json) fixes required source provenance, multiple forecast horizons, accuracy metrics, interim quality gates and a protected final holdout. See [benchmark methodology](docs/forecast-evaluation.md). All current benchmark tests are synthetic; **no real-time backtest superiority or public forecast release has been certified**. Authenticated, verified historical acquisition vintages are a prerequisite.
