@@ -6,6 +6,10 @@ on:
       - 'scripts/verify-restored-statistical-archives.py'
       - '.github/workflows/cv1-17-source-restoration.yml'
       - 'docs/evidence/cv1-17-private-source-archive-restoration-2026-11-20.md'
+  pull_request:
+    paths:
+      - 'scripts/verify-restored-statistical-archives.py'
+      - '.github/workflows/cv1-17-source-restoration.yml'
   workflow_dispatch:
 permissions:
   contents: read
