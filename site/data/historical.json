@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0.0",
+  "status": "unavailable",
+  "generated_at": null,
+  "reason": "Official Destatis snapshot authentication, source-profile confirmation and independent published-value checks are outstanding. No verified historical production index is available for public display.",
+  "series": []
+}
