@@ -2,7 +2,7 @@ import {INDUSTRIES,verifyHistoricalPayload,latestMonth,filterMonths,plotPoints,s
 const get=(id)=>document.getElementById(id);
 const picker=get('historical-sector'),range=get('historical-range'),status=get('historical-status');
 const figure=get('historical-chart'),table=get('historical-rows');
-const meta=get('historical-provenance'),caption=get('historical-caption');
+const meta=get('historical-provenance'),caption=get('historical-caption'),disclosure=get('historical-disclosure');
 const notReady=(reason)=>{
   figure.replaceChildren();
   table.replaceChildren();
@@ -36,7 +36,7 @@ function draw(series){
   for(const o of rows){
     const tr=document.createElement('tr'),th=document.createElement('th'),td=document.createElement('td'),flag=document.createElement('td');
     th.scope='row';th.textContent=o.period;td.textContent=o.value===null?'Unavailable':o.value.toFixed(1);
-    flag.textContent=o.missing_reason || o.source_status_flags.join(', ') || 'Source status not specified';
+    flag.textContent=o.missing_reason || (o.source_status_flags.includes('source_quality_field_not_provided') ? 'Source revision status not provided' : (o.source_status_flags.join(', ') || 'Source status not specified'));
     tr.append(th,td,flag);table.append(tr);
   }
   caption.textContent='Monthly production index ('+series.base_year+' = 100), '+series.adjustment.replaceAll('_',' ')+', Germany.';
@@ -47,8 +47,17 @@ function draw(series){
   if (payload.status==='preview_validated') { status.textContent+=' Source values independently matched to Eurostat (705/705); source release-status flags are unavailable. Public publication remains blocked.'; }
   const link=document.createElement('a');link.href=series.source_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Destatis source';
   meta.replaceChildren(document.createTextNode(
-    'Source: Destatis GENESIS '+series.dataset_id+' · WZ2008 '+series.industry_code+
-    ' · Acquired '+series.retrieved_at+(payload.status==='preview_validated'?' · Protected preview only; public release blocked · ':' · Release verified · ')),link);
+    'Source: Destatis GENESIS · © Statistisches Bundesamt (Destatis), GENESIS-Online '+series.dataset_id+
+    ' · Data Licence Germany Attribution 2.0 · WZ2008 '+series.industry_code+
+    ' · Retrieved '+series.retrieved_at+(payload.status==='preview_validated'?' · Cross-checked against Eurostat sts_inpr_m · Protected preview only · ':' · Release verified · ')),link);
+  if(payload.status==='preview_validated'){
+    const separator=document.createTextNode(' · ');
+    const eurostat=document.createElement('a');
+    eurostat.href='https://ec.europa.eu/eurostat/databrowser/view/sts_inpr_m/default/table';
+    eurostat.target='_blank';eurostat.rel='noopener noreferrer';
+    eurostat.textContent='Eurostat comparator';
+    meta.append(separator,eurostat);
+  }
 }
 let payload;
 function update(){
@@ -64,6 +73,11 @@ async function load(){
     const response=await fetch('./data/historical.json',{cache:'no-store'});
     if(!response.ok)throw Error('Data release file unavailable.');
     payload=verifyHistoricalPayload(await response.json());
+    if(payload.status==='preview_validated'){
+      disclosure.textContent='Protected research preview. Five authentic 2015–2026 monthly manufacturing-index series have been cross-verified with Eurostat (705 of 705). Index 2021=100, original unadjusted; latest observed month September 2026. Individual source revision flags are unavailable. Public release and all forecasts remain blocked.';
+    } else if(payload.status==='validated'){
+      disclosure.textContent='Verified historical industrial production index, 2021=100. Source retrieval and latest observed period are shown below. Forward-looking scenario controls on this page remain illustrative and separately labelled.';
+    }
   }catch(e){payload={status:'unavailable',reason:'Verified source release cannot be loaded.'};}
   update();
 }
