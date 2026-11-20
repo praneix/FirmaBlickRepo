@@ -35,7 +35,7 @@ function canonicalCase(v){return CASES.find(x=>x.toLowerCase()===v.toLowerCase()
 function segments(text){
   return text.replace(/\b(?:and then|then)\b/gi, ';')
     .replace(/\s+and\s+(?=(?:compare|set|use|choose|switch|change|make|assume|start|begin|hold|keep|energy|productivity|the\s+energy|the\s+productivity|show)\b)/gi, ';')
-    .split(/[.;\n]+|,(?=\s*(?:compare|set|use|choose|switch|change|make|assume|start|begin|hold|keep|energy|productivity|the\s+energy|the\s+productivity|show)\b)/i)
+    .split(/(?:\.(?!\d)|[;\n])+|,(?=\s*(?:compare|set|use|choose|switch|change|make|assume|start|begin|hold|keep|energy|productivity|the\s+energy|the\s+productivity|show)\b)/i)
     .map(trim).filter(Boolean);
 }
 function clauseMatches(raw) {
@@ -72,7 +72,7 @@ function clauseMatches(raw) {
     return {field:'productivity',value:m[1],start:m[2]};
   if((m=s.match(pattern('(?:start|begin)(?:\\s+(?:productivity|the\\s+productivity))?\\s+(?:in|from|at)\\s+(2027|2028|2029)'))))
     return {field:'start',value:Number(m[1])};
-  if((m=s.match(pattern('(?:productivity\\s+)?(?:start|starting|beginning)(?:\\s+year)?\\s*(?:to|in|from|=|is)\\s*(2027|2028|2029)'))))
+  if((m=s.match(pattern('(?:productivity\\s+)?(?:start|starting|beginning)(?:\\s+year)?\\s*(?:to|in|from|=|is)?\\s*(2027|2028|2029)'))))
     return {field:'start',value:Number(m[1])};
   if((m=s.match(pattern('(?:hold|keep|set|make)\\s+(?:the\\s+)?energy\\s+(?:price\\s+)?(?:constant|unchanged|flat|steady|at\\s+0\\s*%)'))))
     return {field:'energy',value:'0'};
