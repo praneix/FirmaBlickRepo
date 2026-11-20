@@ -5,6 +5,8 @@ on:
       - 'site/**'
       - 'tests/**'
       - 'ingestion/**'
+      - 'forecast/**'
+      - 'docs/forecast-evaluation.md'
       - 'data-contracts/**'
       - 'docs/genesis-ingestion.md'
       - 'docs/snapshot-store.md'
