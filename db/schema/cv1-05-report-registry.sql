@@ -100,7 +100,7 @@ grant usage, select on sequence public.fb_delivery_events_event_id_seq to servic
 
 -- Never overwrite digest/path of a registered report version. Correct with a new revision.
 create or replace function public.fb_immutable_version_artifact()
-returns trigger language plpgsql set search_path = '' as $
+returns trigger language plpgsql set search_path = '' as $$
 begin
  if new.full_pdf_sha256 is distinct from old.full_pdf_sha256
     or new.sample_pdf_sha256 is distinct from old.sample_pdf_sha256
@@ -110,7 +110,7 @@ begin
    raise exception 'REPORT_VERSION_IMMUTABLE' using errcode='P0001';
  end if;
  return new;
-end; $;
+end; $$;
 drop trigger if exists fb_version_artifact_immutable on public.fb_report_versions;
 create trigger fb_version_artifact_immutable before update on public.fb_report_versions
  for each row execute function public.fb_immutable_version_artifact();
