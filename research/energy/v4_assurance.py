@@ -5,7 +5,7 @@ Run: python3 research/energy/v4_assurance.py
 from decimal import Decimal
 from pathlib import Path
 import json, math, sys
-from research.energy.verify_hourly import calculate
+from verify_hourly import calculate
 ROOT=Path(__file__).resolve().parent
 EU=ROOT/"data/eurostat_nrg_pc_205_2026_s1_DE_FR_ES_raw.json"
 CHECK={
