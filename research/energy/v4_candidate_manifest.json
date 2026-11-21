@@ -11,9 +11,9 @@
   "sample_artifact": "FirmaBlick_Energy_V4_Executive_Sample.pdf",
   "pages": 20,
   "sample_pages": 5,
-  "full_pdf_sha256": "76f48eaa0a0514f45ca00bca1154929f0028a47e26221ee7761ac66d131adbaf",
-  "full_html_sha256": "7598ba5be4d459f358220b9235d5b1c7efeb30dafbe02abd45154cc7857961cf",
-  "sample_pdf_sha256": "04276fa6a5c81406122e4542553b3f1a9b67406b68b893e06c439e8a79eb71b9",
+  "full_pdf_sha256": "0ba456c7156fbeca3e3b18fa5a7457fc8331b8a4089d1f1ebc771db534f93e81",
+  "full_html_sha256": "434f6e127d168d3840c8eb84f442231a8678b5182713c7681628c33077144f79",
+  "sample_pdf_sha256": "81a17ad30b6c25d8622211e516f68fce4d96660cd2d16f9ae385c242e84ea150",
   "model_name": "FirmaBlick_Energy_V4_Deterministic_Investment_Model.xlsx",
   "artifact_storage": "Private owner review copy delivered as conversation attachment; neither PDF nor HTML is committed to public GitHub",
   "original_basis": "FirmaBlick Energy V3 review candidate 23 pages, 2026-11-20; reordered/edited to 20-page V4",
@@ -47,5 +47,6 @@
     "Confirm licensed publication rights for all charts and derived source data",
     "Confirm policy/legal statements before distribution",
     "Authorize exact final artifact checksum prior to customer fulfillment"
-  ]
+  ],
+  "model_sha256": "9f914b53c814278d15595e7bc01bf4d27c7ba2266f934ea0059b7bb506856741"
 }
