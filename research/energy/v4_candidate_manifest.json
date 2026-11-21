@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "FB-ENERGY-DE-2026-01",
+  "revision": "V4-2026-11-21-RC1",
+  "status": "EDITORIAL_REVIEW_REQUIRED",
+  "publication_approved": false,
+  "owner_approval_required": true,
+  "public_distribution_allowed": false,
+  "working_title": "The industrial power-cost decision",
+  "full_artifact": "FirmaBlick_Energy_Flagship_V4_Candidate.pdf",
+  "sample_artifact": "FirmaBlick_Energy_V4_Executive_Sample.pdf",
+  "pages": 20,
+  "sample_pages": 5,
+  "full_pdf_sha256": "76f48eaa0a0514f45ca00bca1154929f0028a47e26221ee7761ac66d131adbaf",
+  "full_html_sha256": "7598ba5be4d459f358220b9235d5b1c7efeb30dafbe02abd45154cc7857961cf",
+  "sample_pdf_sha256": "04276fa6a5c81406122e4542553b3f1a9b67406b68b893e06c439e8a79eb71b9",
+  "model_name": "FirmaBlick_Energy_V4_Deterministic_Investment_Model.xlsx",
+  "artifact_storage": "Private owner review copy delivered as conversation attachment; neither PDF nor HTML is committed to public GitHub",
+  "original_basis": "FirmaBlick Energy V3 review candidate 23 pages, 2026-11-20; reordered/edited to 20-page V4",
+  "sample_basis": "Five report pages for executive preview; sample content is not separately approved for public distribution",
+  "source_vintages": {
+    "eurostat_nonhousehold": "2026-10-19T11:00:00+0200",
+    "smard_wholesale_2025": "2025 calendar market",
+    "smard_q3_2026": "Q3 2026, released 2026-10"
+  },
+  "claim_verification": {
+    "smard_wholesale_2025": "verified from archived 15,387 mixed-interval price series",
+    "eurostat_nrg_pc_205": "15 official cells verified, with provisional German flags",
+    "bess_10year_cashflow": "independent deterministic formula, workbook IRR and NPV cross-check",
+    "q3_2026_smard": "official market bulletin independently inspected 2026-11-21"
+  },
+  "open_evidence_gaps": {
+    "negative_hour_count_573_vs_576": "UNRESOLVED_EXPLICITLY_DISCLOSED",
+    "commercial_publication_rights": "AWAITING_REVIEW",
+    "policy_2027_outlook_and_post_november_updates": "FOLLOW_UP_BEFORE_FINAL_RELEASE",
+    "other_claim_source_locus_checks": "PARTIAL_REVIEW",
+    "owner_final_editorial_release": "AWAITING_APPROVAL",
+    "commercial_sample_release": "AWAITING_APPROVAL",
+    "pdf_cross_renderer_visual_parity": "WEASYPRINT_REVIEWED_CHROMIUM_PRINT_REMAINS_UNVERIFIED"
+  },
+  "commercial_pricing_approved": false,
+  "historical_data_publication_approved": false,
+  "forecast_approved": false,
+  "release_blocks": [
+    "Unreconciled 573 vs 576 metric remains a clearly disclosed definition difference",
+    "Complete owner editorial review and independent source sentence/location assessment",
+    "Confirm licensed publication rights for all charts and derived source data",
+    "Confirm policy/legal statements before distribution",
+    "Authorize exact final artifact checksum prior to customer fulfillment"
+  ]
+}
