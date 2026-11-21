@@ -1,0 +1,87 @@
+name: CV1-05 Private Report Registry and Entitlement Assurance
+on:
+  pull_request:
+    paths:
+      - 'api/**'
+      - 'server/**'
+      - 'db/**'
+      - 'product/registry/**'
+      - 'tests/report-delivery.test.mjs'
+      - 'research/energy/v4_candidate_manifest.json'
+      - '.github/workflows/cv1-05-private-report-registry.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: cv1-05-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+jobs:
+  security-and-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: test-only
+          POSTGRES_DB: firmablick_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d firmablick_ci"
+          --health-interval 5s --health-timeout 4s --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: "5432"
+      PGDATABASE: firmablick_ci
+      PGUSER: postgres
+      PGPASSWORD: test-only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check Javascript and run all existing repository tests
+        run: |
+          node --check api/report-access.js
+          node --check server/report-delivery.cjs
+          npm test
+          npm run build
+          node scripts/security-audit.mjs
+      - name: Prevent unpublished PDFs or secrets in public Vercel output
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from json import loads
+          assert not list(Path('dist').rglob('*.pdf')), 'Paid PDFs must not be in public build'
+          assert not list(Path('site').rglob('*.pdf')), 'Paid PDFs must not be in public source'
+          m=loads(Path('product/registry/energy-v4.review.json').read_text())
+          v=loads(Path('research/energy/v4_candidate_manifest.json').read_text())
+          a=m['versions'][0]
+          assert v['revision']==a['revision'] and v['full_pdf_sha256']==a['full_pdf_sha256']
+          assert v['sample_pdf_sha256']==a['sample_pdf_sha256']
+          assert a['object_path'].endswith('/'+a['full_pdf_sha256']+'.pdf')
+          assert m['publication_approved'] is False and a['publication_approved'] is False
+          assert v['publication_approved'] is False and v['commercial_pricing_approved'] is False
+          print('CANDIDATE_REVIEW_HASHES_ALIGNED_RELEASE_GATED')
+          PY
+      - name: Install PostgreSQL client
+        run: |
+          if ! command -v psql >/dev/null; then
+            sudo apt-get -qq update
+            sudo apt-get -qq install -y postgresql-client
+          fi
+      - name: Create Supabase-like isolated test roles (ephemeral database only)
+        run: |
+          psql -v ON_ERROR_STOP=1 -c "create role anon nologin;"
+          psql -v ON_ERROR_STOP=1 -c "create role authenticated nologin;"
+          psql -v ON_ERROR_STOP=1 -c "create role service_role nologin bypassrls;"
+      - name: Install private registry and atomic download-token function
+        run: psql -v ON_ERROR_STOP=1 -f db/schema/cv1-05-report-registry.sql
+      - name: Exercise paid-entitlement and denial states with real Postgres
+        run: psql -v ON_ERROR_STOP=1 -f db/tests/cv1-05-registry-acceptance.sql
+      - name: Explicitly preserve closed commercial operation
+        run: |
+          psql -At -v ON_ERROR_STOP=1 -c "select enabled,owner_approved_at is null from public.fb_delivery_release where id=1;" | grep -qx 'f|t'
+          echo "Private delivery remains disabled. SQL server proof completed; no production project modified." >> "$GITHUB_STEP_SUMMARY"
