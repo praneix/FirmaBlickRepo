@@ -16,15 +16,15 @@
   "rights_verified_at": null,
   "versions": [
     {
-      "revision": "V4-2026-11-21-RC1",
+      "revision": "V4-2026-11-21-RC2",
       "version_status": "review",
       "publication_approved": false,
-      "full_pdf_sha256": "0ba456c7156fbeca3e3b18fa5a7457fc8331b8a4089d1f1ebc771db534f93e81",
-      "sample_pdf_sha256": "81a17ad30b6c25d8622211e516f68fce4d96660cd2d16f9ae385c242e84ea150",
+      "full_pdf_sha256": "1b829c279178f0da6681d28021f2a80dc419288c3d247cb72f9169f5ad10dd82",
+      "sample_pdf_sha256": "ef7c03259d5017ab6d45e7df3ba59b7d94ec3ef5f5dea80d25f9c342b814abfd",
       "full_content_type": "application/pdf",
       "sample_status": "unapproved",
       "private_bucket": "firmablick-paid-reports",
-      "object_path": "reports/FB-ENERGY-DE-2026-01/V4-2026-11-21-RC1/0ba456c7156fbeca3e3b18fa5a7457fc8331b8a4089d1f1ebc771db534f93e81.pdf",
+      "object_path": "reports/FB-ENERGY-DE-2026-01/V4-2026-11-21-RC2/1b829c279178f0da6681d28021f2a80dc419288c3d247cb72f9169f5ad10dd82.pdf",
       "pages": 20,
       "sample_pages": 5,
       "sources": [
@@ -46,7 +46,7 @@
       "owner_approved_at": null,
       "rights_verified_at": null,
       "correction_notice": null,
-      "supersedes_revision": null
+      "supersedes_revision": "V4-2026-11-21-RC1"
     }
   ],
   "policy": {
@@ -58,5 +58,13 @@
     "token": "32-byte CSPRNG token sent privately, only SHA256 stored, expires no later than 15min",
     "refund": "Revoke entitlement immediately; previously issued signed links may survive 60 seconds.",
     "email": "Never embed a raw token in client-side HTML, GitHub or analytics logs."
+  },
+  "version_correction": {
+    "previous_revision": "V4-2026-11-21-RC1",
+    "previous_hashes": {
+      "pdf": "0ba456c7156fbeca3e3b18fa5a7457fc8331b8a4089d1f1ebc771db534f93e81",
+      "sample": "81a17ad30b6c25d8622211e516f68fce4d96660cd2d16f9ae385c242e84ea150"
+    },
+    "note": "Previous digest values do not describe the verified current mounted asset. RC1 remains unapproved and must not be fulfilled. RC2 hashes verified on exact current PDF bytes."
   }
 }
