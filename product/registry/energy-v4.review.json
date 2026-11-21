@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "report_id": "FB-ENERGY-DE-2026-01",
+  "slug": "germany-industrial-energy-decision-report-2026",
+  "title": "The industrial power-cost decision",
+  "audience": [
+    "Industrial CFOs",
+    "Plant directors",
+    "Energy procurement leaders"
+  ],
+  "thesis": "Germany's industrial electricity price exposure requires separating wholesale markets, delivered costs and investable flexibility.",
+  "status": "review",
+  "publication_approved": false,
+  "price_approved": false,
+  "owner_approved_at": null,
+  "rights_verified_at": null,
+  "versions": [
+    {
+      "revision": "V4-2026-11-21-RC1",
+      "version_status": "review",
+      "publication_approved": false,
+      "full_pdf_sha256": "0ba456c7156fbeca3e3b18fa5a7457fc8331b8a4089d1f1ebc771db534f93e81",
+      "sample_pdf_sha256": "81a17ad30b6c25d8622211e516f68fce4d96660cd2d16f9ae385c242e84ea150",
+      "full_content_type": "application/pdf",
+      "sample_status": "unapproved",
+      "private_bucket": "firmablick-paid-reports",
+      "object_path": "reports/FB-ENERGY-DE-2026-01/V4-2026-11-21-RC1/0ba456c7156fbeca3e3b18fa5a7457fc8331b8a4089d1f1ebc771db534f93e81.pdf",
+      "pages": 20,
+      "sample_pages": 5,
+      "sources": [
+        {
+          "provider": "SMARD / Bundesnetzagentur",
+          "period": "2025",
+          "metric": "DE-LU wholesale price",
+          "assurance": "2025 15,387 → 8,760 hourly equivalents, 573 vs 576 difference disclosed"
+        },
+        {
+          "provider": "Eurostat",
+          "dataset": "nrg_pc_205",
+          "source_updated": "2026-10-19T11:00:00+0200",
+          "assurance": "15 exact DE/FR/ES cells H1-2026, Germany provisional"
+        }
+      ],
+      "provenance_manifest": "research/energy/v4_candidate_manifest.json",
+      "rights": "review_required",
+      "owner_approved_at": null,
+      "rights_verified_at": null,
+      "correction_notice": null,
+      "supersedes_revision": null
+    }
+  ],
+  "policy": {
+    "default_license": "Internal legal-entity use; owner/legal approval pending",
+    "version_immutability": "Never overwrite approved object. Amend by new revision and SHA path.",
+    "reissue_policy": "Retain original purchase's revision unless buyer expressly offered a newer corrected edition; record acceptance and correction notice.",
+    "retirement_policy": "Retired versions cannot generate new links; paid customer correction/remedy requires an approved reissue.",
+    "access": "Verified paid order + entitlement + one-time token; backend-controlled signed storage URL with <=60sec TTL",
+    "token": "32-byte CSPRNG token sent privately, only SHA256 stored, expires no later than 15min",
+    "refund": "Revoke entitlement immediately; previously issued signed links may survive 60 seconds.",
+    "email": "Never embed a raw token in client-side HTML, GitHub or analytics logs."
+  }
+}
