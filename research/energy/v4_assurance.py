@@ -4,7 +4,7 @@ Run: python3 research/energy/v4_assurance.py
 """
 from decimal import Decimal
 from pathlib import Path
-import json, math, sys
+import json, math, sys, traceback
 from verify_hourly import calculate
 ROOT=Path(__file__).resolve().parent
 EU=ROOT/"data/eurostat_nrg_pc_205_2026_s1_DE_FR_ES_raw.json"
@@ -75,4 +75,4 @@ def run():
 if __name__=="__main__":
  try:print(json.dumps(run(),indent=2))
  except Exception as e:
-  print("V4_ASSURANCE_FAILED: "+str(e),file=sys.stderr);sys.exit(2)
+  traceback.print_exc(); print("V4_ASSURANCE_FAILED: "+repr(e),file=sys.stderr);sys.exit(2)
