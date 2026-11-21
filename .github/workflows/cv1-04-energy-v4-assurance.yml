@@ -1,0 +1,53 @@
+name: CV1-04 Energy V4 Numerical and Release Assurance
+on:
+  pull_request:
+    paths:
+      - 'research/energy/**'
+      - 'docs/energy/**'
+      - '.github/workflows/cv1-04-energy-v4-assurance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: fb-energy-v4-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check all 2025 raw market intervals and 15 Eurostat price cells
+        run: python3 research/energy/v4_assurance.py
+      - name: Recompute market evidence independently
+        run: python3 research/energy/verify_hourly.py
+      - name: Fail-closed if V4 publication or commercial pricing is enabled
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          v=json.loads(Path('research/energy/v4_candidate_manifest.json').read_text())
+          assert v['status']=='EDITORIAL_REVIEW_REQUIRED'
+          assert v['publication_approved'] is False
+          assert v['owner_approval_required'] is True
+          assert v['public_distribution_allowed'] is False
+          assert v['commercial_pricing_approved'] is False
+          assert v['historical_data_publication_approved'] is False
+          assert v['forecast_approved'] is False
+          assert len(v['full_pdf_sha256'])==64 and len(v['sample_pdf_sha256'])==64
+          print('EDITORIAL_REPORT_REMAINS_UNPUBLISHED')
+          PY
+      - name: Sanitized evidence summary
+        run: |
+          echo '### Energy V4 deterministic checks' >> "$GITHUB_STEP_SUMMARY"
+          echo '2025: 15,387 raw records → 8,760 hourly equivalents; annual mean reconciles to €89.32/MWh.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Negative-price counts remain definition-dependent: SMARD 573; reconstructed hourly means 576.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Eurostat H1 2026: 15 exact DE/FR/ES cells and five German provisional flags.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'BESS model: independent 10-year NPV and downside scenarios reproduced.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'PDF/HTML and actual workbook remain private owner review artifacts; no full report committed.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'All commercial/publication flags remain blocked.' >> "$GITHUB_STEP_SUMMARY"
