@@ -1,0 +1,30 @@
+name: FirmaBlick n8n Read-only Diagnostics
+on:
+  push:
+    branches: ['agent/n8n-readonly-diagnostics-20261120']
+    paths:
+      - '.github/workflows/n8n-readonly-diagnostics.yml'
+      - 'research/n8n/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check that n8n connection secrets exist
+        env:
+          N8N_BASE_URL: ${{ secrets.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        run: |
+          if [ -z "$N8N_BASE_URL" ] || [ -z "$N8N_API_KEY" ]; then
+            echo "Requires N8N_BASE_URL and N8N_API_KEY secrets. See research/n8n/README.md." >> "$GITHUB_STEP_SUMMARY"
+            exit 2
+          fi
+      - name: Verify known FirmaBlick workflows read-only
+        env:
+          N8N_BASE_URL: ${{ secrets.N8N_BASE_URL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        run: python3 research/n8n/diagnose_readonly.py

@@ -21,7 +21,7 @@ def calculate():
     start=stamps[0]
     end=start+365*24*3600
     assert datetime.fromtimestamp(start,timezone.utc).isoformat()=="2024-12-31T23:00:00+00:00"
-    assert original["unit"]=="EUR/MWh"
+    assert original["unit"].replace(" ","")=="EUR/MWh", "Unexpected source units"
     sums=[0.0]*8760; seconds=[0]*8760
     for i,(stamp,value) in enumerate(zip(stamps,prices)):
         nxt=stamps[i+1] if i+1<len(stamps) else end

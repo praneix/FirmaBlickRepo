@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - 'site/**'
+      - 'research/**'
+      - 'docs/integration/**'
+      - '.github/workflows/cv1-02-integration-assurance.yml'
+      - '.github/workflows/n8n-readonly-diagnostics.yml'
       - 'tests/**'
       - 'ingestion/**'
       - 'forecast/**'
