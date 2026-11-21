@@ -46,8 +46,8 @@ jobs:
         run: |
           node --check api/report-access.js
           node --check server/report-delivery.cjs
-          npm test
           npm run build
+          npm test
           node scripts/security-audit.mjs
       - name: Prevent unpublished PDFs or secrets in public Vercel output
         run: |
