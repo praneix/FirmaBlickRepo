@@ -21,7 +21,8 @@ create table if not exists public.fb_report_versions (
  evidence_register jsonb not null default '{}'::jsonb,
  full_pdf_sha256 text not null check (full_pdf_sha256 ~ '^[a-f0-9]{64}$'),
  sample_pdf_sha256 text check (sample_pdf_sha256 ~ '^[a-f0-9]{64}$'),
- object_path text not null unique check (object_path ~ '^reports/[A-Za-z0-9-]+/[A-Za-z0-9._-]+/[a-f0-9]{64}\\.pdf$'),
+ object_path text not null unique check (object_path ~ '^reports/[A-Za-z0-9-]+/[A-Za-z0-9._-]+/[a-f0-9]{64}[.]pdf$'),
+ constraint report_object_sha_matches_path check(right(object_path,68)=full_pdf_sha256 || '.pdf'),
  rights_basis text not null default 'review_required',
  status text not null default 'review' check (status in ('draft','review','approved','retired')),
  publication_approved boolean not null default false,
@@ -96,6 +97,24 @@ grant select, insert, update, delete on public.fb_report_catalog, public.fb_repo
  public.fb_entitlements, public.fb_download_tokens, public.fb_delivery_events,
  public.fb_delivery_release to service_role;
 grant usage, select on sequence public.fb_delivery_events_event_id_seq to service_role;
+
+-- Never overwrite digest/path of a registered report version. Correct with a new revision.
+create or replace function public.fb_immutable_version_artifact()
+returns trigger language plpgsql set search_path = '' as $
+begin
+ if new.full_pdf_sha256 is distinct from old.full_pdf_sha256
+    or new.sample_pdf_sha256 is distinct from old.sample_pdf_sha256
+    or new.object_path is distinct from old.object_path
+    or new.report_id is distinct from old.report_id
+    or new.revision is distinct from old.revision then
+   raise exception 'REPORT_VERSION_IMMUTABLE' using errcode='P0001';
+ end if;
+ return new;
+end; $;
+drop trigger if exists fb_version_artifact_immutable on public.fb_report_versions;
+create trigger fb_version_artifact_immutable before update on public.fb_report_versions
+ for each row execute function public.fb_immutable_version_artifact();
+revoke all on function public.fb_immutable_version_artifact() from public, anon, authenticated;
 
 -- A database transaction is the only place where a download token may be consumed.
 -- A client cannot provide an order ID, choose a report version or assert payment.
