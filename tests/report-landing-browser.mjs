@@ -45,7 +45,7 @@ try{
   assert.ok(await page.locator('a[href*="smard.de"]').count()>0);
   const outbound=await page.locator('a[href*="smard.de"]').first().getAttribute('rel');
   assert.match(outbound,/noopener/);
-  assert.match(await page.locator('a[href="../../index.html#contact"]').first().innerText(),/advisory enquiry status/i);
+  assert.match(await page.locator('.report-enquiry-link').innerText(),/advisory enquiry status/i);
   assert.match(await page.locator('.report-small').innerText(),/demonstration/i);
   const prices=await page.locator('.report-exhibit-bar').evaluateAll(els=>els.map(x=>({
    width:x.getBoundingClientRect().width,parent:x.parentElement.getBoundingClientRect().width
