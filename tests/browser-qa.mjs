@@ -25,8 +25,8 @@ try {
     await page.locator('#comparison').selectOption('None');
     assert.equal(await page.locator('#comparison-key').isHidden(),true);
     assert.equal(await page.locator('#trajectory tr').count(),5);
-    await page.locator('#topic').selectOption({label:'Automotive'});
-    assert.equal(await page.locator('.card:visible').count(),1);
+    assert.equal(await page.locator('.featured-research').count(),1);
+    assert.equal(await page.locator('a[href*="germany-industrial-energy-decision-report-2026/"]').count()>0,true);
     if(label==='mobile'){
       const width=await page.evaluate(()=>({body:document.documentElement.scrollWidth,viewport:innerWidth}));
       assert.ok(width.body<=width.viewport+2,JSON.stringify(width)+' horizontal overflow');
