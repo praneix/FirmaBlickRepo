@@ -99,6 +99,7 @@ jobs:
           node tests/historical-browser.mjs
           node tests/scenario-browser.mjs
           node tests/beta-browser.mjs
+          node tests/report-landing-browser.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
