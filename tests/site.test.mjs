@@ -7,7 +7,7 @@ const html = readFileSync(new URL('../site/index.html', import.meta.url),'utf8')
 const script = readFileSync(new URL('../site/site.mjs', import.meta.url),'utf8');
 
 function boot() {
-  const defaults = {scenario:'Central',productivity:'1',start:'2027',energy:'0',comparison:'Central',topic:'all'};
+  const defaults = {scenario:'Central',productivity:'1',start:'2027',energy:'0',comparison:'Central'};
   const elements = new Map();
   for (const [id,value] of Object.entries(defaults)) elements.set(id,{
     value, listeners:{}, addEventListener(evt,cb){this.listeners[evt]=cb;},
@@ -19,11 +19,10 @@ function boot() {
   const contact={listeners:{},addEventListener(evt,cb){this.listeners[evt]=cb;},
     querySelector(){return button;},reset(){this.resetCalled=true;}};
   elements.set('contact-form',contact);
-  const reports=['Energy & Transition','Automotive','Supply Chain'].map(topic=>({dataset:{topic},hidden:false}));
   const document={getElementById(id){assert.ok(elements.has(id),'Missing DOM fixture '+id);return elements.get(id);},
-    querySelectorAll(){return reports;}};
+    querySelectorAll(){return [];}};
   runInNewContext(script,{document,console});
-  return {elements,contact,button,reports};
+  return {elements,contact,button};
 }
 
 test('page contains navigation, labelled illustrative scenario and accessible table',()=>{
@@ -55,10 +54,13 @@ test('changing energy affects output while preserving other assumptions',()=>{
   assert.ok(low>high,low+' must exceed '+high);
   assert.equal(e.get('scenario').value,'Central');
 });
-test('research topics are filtered without removing cards',()=>{
-  const {elements:e,reports}=boot();
-  e.get('topic').value='Automotive';e.get('topic').trigger();
-  assert.deepEqual(reports.map(r=>r.hidden),[true,false,true]);
+test('research catalogue contains only the actual gated Energy report',()=>{
+  assert.match(html,/class="featured-research"/);
+  assert.match(html,/The Industrial Power-Cost Decision/);
+  assert.match(html,/research\/germany-industrial-energy-decision-report-2026\//);
+  assert.match(html,/Publication pending/);
+  assert.doesNotMatch(html,/Example report|example reports|Preview research scope/);
+  assert.doesNotMatch(html,/id="topic"/);
 });
 test('contact form clearly behaves as a local preview',()=>{
   const {elements:e,contact,button}=boot();
