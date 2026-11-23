@@ -15,6 +15,7 @@
 <meta property="og:description" content="German industrial energy exposure, 2025 price structure, H1 2026 tariff benchmarks and investment decisions. Editorial review preview.">
 <meta property="og:url" content="https://firmablick.com/research/germany-industrial-energy-decision-report-2026/">
 
+<script type="module" src="./energy-page.mjs"></script>
 </head>
 <body class="report-page">
 <a class="skip" href="#main">Skip to report</a>
@@ -23,12 +24,20 @@
 <a class="brand" href="../../index.html#home"><span class="monogram" aria-hidden="true">FB</span><span><strong>FirmaBlick</strong><small>STRUCTURE. PERSPECTIVE. IMPACT.</small></span></a>
 <nav aria-label="Main navigation"><a href="../../index.html#intelligence">Intelligence</a><a href="../../index.html#historical">Historical data</a><a href="../../index.html#research" aria-current="page">Research</a><a href="../../index.html#methodology">Methodology</a><a href="../../index.html#contact">Contact</a></nav>
 </div></header>
+<nav class="report-rail" aria-label="Research page sections">
+<a href="#main" class="report-rail-link" aria-label="Introduction" data-label="Introduction"><span aria-hidden="true"></span></a>
+<a href="#preview" class="report-rail-link" aria-label="Executive preview" data-label="Executive preview"><span aria-hidden="true"></span></a>
+<a href="#exhibit" class="report-rail-link" aria-label="Investment exhibit" data-label="Investment exhibit"><span aria-hidden="true"></span></a>
+<a href="#scope" class="report-rail-link" aria-label="Report contents" data-label="Report contents"><span aria-hidden="true"></span></a>
+<a href="#access" class="report-rail-link" aria-label="Research access" data-label="Research access"><span aria-hidden="true"></span></a>
+<a href="#sources" class="report-rail-link" aria-label="Sources and methodology" data-label="Sources and methodology"><span aria-hidden="true"></span></a>
+</nav>
 <main id="main">
-<section class="report-hero">
+<section class="report-hero report-frame" data-report-section="main">
 <div class="wrap report-hero-layout">
 <div>
-<p class="eyebrow report-hero-kicker">DE / INDUSTRIAL ENERGY / 2026 · RESEARCH CANDIDATE</p>
-<h1>The Industrial<br>Power-Cost Decision</h1>
+<nav class="eyebrow report-hero-kicker report-breadcrumbs" aria-label="Research breadcrumb"><a href="../../index.html#research">DE</a><span aria-hidden="true">/</span><a href="../../index.html#research">INDUSTRIAL ENERGY</a><span aria-hidden="true">/</span><span aria-current="page">2026 · RESEARCH CANDIDATE</span></nav>
+<h1>The Industrial Power-Cost Decision</h1>
 <p class="report-deck">From wholesale price volatility to delivered industrial tariffs, plant-level exposure and investment choices.</p>
 <p class="report-intro">For industrial finance, operations and energy-procurement leaders making decisions in Germany, with defined French and Spanish tariff comparisons.</p>
 <div class="report-actions">
@@ -37,19 +46,11 @@
 </div>
 <p class="report-approval" role="status"><strong>Editorial candidate, V4-RC2.</strong> PDF sample, full edition, price, purchase and customer delivery are awaiting final approval. No orders are being accepted.</p>
 </div>
-<div class="report-hero-art" role="img" aria-label="Abstract energy market demand and cost exposure curves">
-<svg viewBox="0 0 520 430" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-<defs><linearGradient id="fbgraph" x1="0" x2="1"><stop stop-color="#a7b6c2" stop-opacity=".2"/><stop offset="1" stop-color="#d0aaa0" stop-opacity=".85"/></linearGradient></defs>
-<path d="M35 40 V370 H495" fill="none" stroke="#8ea4b2" stroke-width="1"/>
-<g stroke="#426174" stroke-width="1" opacity=".5"><path d="M35 105H495 M35 170H495 M35 235H495 M35 300H495 M120 40V370 M220 40V370 M320 40V370 M420 40V370"/></g>
-<path d="M36 260 C92 210 110 315 160 244 S236 117 292 225 S367 340 417 184 S470 98 493 124" fill="none" stroke="#d56a5c" stroke-width="4"/>
-<path d="M36 245 C92 274 118 249 160 222 S236 270 292 197 S365 210 418 178 S464 172 493 140" fill="none" stroke="url(#fbgraph)" stroke-width="3"/>
-<path d="M36 296 C90 275 133 293 166 281 S246 255 293 276 S369 241 419 255 S470 236 493 228" fill="none" stroke="#b3c7d0" stroke-width="2" stroke-dasharray="5 8"/>
-<circle cx="417" cy="184" r="6" fill="#d56a5c"/><circle cx="292" cy="197" r="4" fill="#f8e9d5"/>
-<g fill="#d4d9d9" font-size="13" font-family="monospace"><text x="36" y="394">2025 MARKET OBSERVATIONS</text><text x="492" y="394" text-anchor="end">NOT A FORECAST</text></g>
-</svg>
-<p class="art-caption">ILLUSTRATIVE LINEWORK · NO MARKET VALUES PLOTTED</p>
-</div>
+<figure class="report-hero-art report-real-chart" aria-labelledby="market-chart-title market-chart-caption">
+<figcaption id="market-chart-title" class="market-chart-title">2025 · DE–LU WHOLESALE ELECTRICITY</figcaption>
+<svg id="market-monthly-chart" viewBox="0 0 520 330" role="img" aria-label="2025 actual monthly mean day-ahead electricity prices in euros per megawatt-hour; values verified from the Fraunhofer Energy-Charts SMARD source"><text x="42" y="160" fill="#fff">Loading source-verified monthly observations…</text></svg>
+<figcaption id="market-chart-caption" class="market-chart-foot">ACTUAL 2025 MONTHLY AVERAGES · €/MWh · DE–LU · <a href="https://api.energy-charts.info/price?bzn=DE-LU&amp;start=2025-01-01&amp;end=2025-12-31" target="_blank" rel="noopener noreferrer">FRAUNHOFER / SMARD</a></figcaption>
+</figure>
 </div>
 </section>
 <section class="report-strip wrap" aria-label="Publication status and scope">
@@ -58,7 +59,7 @@
 <div><span>FORMAT IN REVIEW</span><strong>20-page PDF + 5-page sample</strong></div>
 <div><span>STATUS</span><strong>Rights and editorial approval pending</strong></div>
 </section>
-<section class="section wrap" id="preview" aria-labelledby="preview-title">
+<section class="section wrap report-frame" id="preview" data-report-section="preview" aria-labelledby="preview-title">
 <p class="eyebrow">Executive preview · On-page extract</p>
 <h2 id="preview-title">Four decisions begin with one distinction.</h2>
 <p class="lead">Wholesale electricity prices describe a traded market. Plant electricity bills also reflect grid fees, levies, taxes, procurement terms and site-specific operations. Analysis must keep these layers separate.</p>
@@ -70,38 +71,38 @@
 </div>
 <p class="report-source-note">Source context: Bundesnetzagentur / SMARD and Eurostat <code>nrg_pc_205</code>. Independently reproduced arithmetic is recorded in the research verification pipeline. Publication rights and final claim-level assurance are still under review.</p>
 </section>
-<section class="section report-exhibit-section" aria-labelledby="exhibit-title">
+<section class="section report-exhibit-section report-frame" id="exhibit" data-report-section="exhibit" aria-labelledby="exhibit-title">
 <div class="wrap">
 <p class="eyebrow">Exhibit preview · Illustrative</p>
 <h2 id="exhibit-title">Investment outcomes are assumption-sensitive.</h2>
-<p>Illustrative ten-year storage economics. These are model outputs, not realised returns or site-specific recommendations.</p>
+<p>Illustrative ten-year storage economics under the stated assumptions.</p>
 <div class="report-exhibit" role="img" aria-label="Illustrative battery storage ten-year NPV: base case positive €69,938, benefits 20 percent lower negative €147,600, benefits 30 percent lower negative €256,369">
 <div class="report-exhibit-row"><span>Base assumptions</span><div class="report-exhibit-track"><div class="report-exhibit-zero"></div><div class="report-exhibit-bar positive bar-base"></div></div><strong>+€69,938</strong></div>
 <div class="report-exhibit-row"><span>20% lower annual benefit</span><div class="report-exhibit-track"><div class="report-exhibit-zero"></div><div class="report-exhibit-bar negative bar-20"></div></div><strong>−€147,600</strong></div>
 <div class="report-exhibit-row"><span>30% lower annual benefit</span><div class="report-exhibit-track"><div class="report-exhibit-zero"></div><div class="report-exhibit-bar negative bar-30"></div></div><strong>−€256,369</strong></div>
 </div>
-<p class="report-source-note">Model: €850,000 illustrative initial capital expenditure; €175,000 starting annual gross benefits; €25,000 annual operating cost; 2% annual gross-benefit degradation; 8% discount rate; ten-year horizon. Benefit reductions are applied to the gross-benefit assumption. Chart scaling is illustrative.</p>
+<p class="report-source-note">Model: €850,000 illustrative initial capital expenditure; €175,000 starting annual gross benefits; €25,000 annual operating cost; 2% annual gross-benefit degradation; 8% discount rate; ten-year horizon. Benefit reductions are applied to the gross-benefit assumption. Chart scaling is illustrative. These are model outputs, not realised returns or site-specific recommendations.</p>
 </div>
 </section>
-<section class="section wrap" id="scope" aria-labelledby="scope-title">
+<section class="section wrap report-frame" id="scope" data-report-section="scope" aria-labelledby="scope-title">
 <p class="eyebrow">Inside the research edition</p>
 <h2 id="scope-title">The decision framework, from market structure to 90-day action.</h2>
-<div class="report-chapters">
+<div class="report-scope-layout"><div class="report-chapters">
 <article><span>01</span><div><h3>The wholesale-market signal</h3><p>Price distribution, negative-price methodology, annual observations and Q3 2026 context.</p></div></article>
 <article><span>02</span><div><h3>The delivered industrial-cost bridge</h3><p>Tariff definitions, like-for-like consumption bands and cross-country comparisons.</p></div></article>
 <article><span>03</span><div><h3>Plant and procurement economics</h3><p>Bill decomposition, volume and timing exposure, and management choices.</p></div></article>
 <article><span>04</span><div><h3>Investment and location discipline</h3><p>Storage financial sensitivities, operating assumptions and contingent options.</p></div></article>
 <article><span>05</span><div><h3>The 90-day decision agenda</h3><p>Executive accountabilities, information requirements, decisions and source assurance.</p></div></article>
-</div>
+</div><aside class="report-scope-aside" aria-label="How to use the research"><p class="eyebrow">EXECUTIVE READING GUIDE</p><h3>From evidence to a defensible decision.</h3><p>Each chapter answers a different management question, moving from market conditions through plant exposure to board-ready next steps.</p><div class="scope-lens"><span class="scope-lens-symbol" aria-hidden="true">↗</span><div><strong>Understand exposure</strong><small>Which costs are observable, and which are site-dependent?</small></div></div><div class="scope-lens"><span class="scope-lens-symbol" aria-hidden="true">↗</span><div><strong>Test economic choices</strong><small>What changes the result under weaker assumptions?</small></div></div><div class="scope-lens"><span class="scope-lens-symbol" aria-hidden="true">↗</span><div><strong>Prioritise action</strong><small>What must finance, procurement and operations decide next?</small></div></div><p class="report-scope-aside-end">Designed for financial leadership · Evidence-led · Decision-oriented</p></aside></div>
 </section>
-<section class="section report-purchase" id="access" aria-labelledby="access-title">
+<section class="section report-purchase report-frame" id="access" data-report-section="access" aria-labelledby="access-title">
 <div class="wrap report-purchase-grid">
-<div><p class="eyebrow">Publication access</p><h2 id="access-title">A documented decision, before a capital commitment.</h2><p>The proposed edition includes a designed 20-page report, cited methodology and evidence notes, and a separate five-page executive sample.</p><p class="report-source-note">The full report will be licensed for internal organisational use under terms to be approved. Public pricing has not been approved or published. Taxes, licensing, refunds and fulfilment terms are not yet final.</p></div>
+<div><p class="eyebrow">Publication access</p><h2 id="access-title">Better evidence for decisions that carry real cost.</h2><p>Industrial power exposure affects margins, operating choices and investment priorities. The research helps financial leaders understand what the available evidence establishes, identify decision-sensitive assumptions and prepare sharper questions for procurement and operations.</p><p>The proposed edition brings that analysis together in a designed 20-page report, with transparent methodology, evidence notes and a separate five-page executive sample.</p><p class="report-source-note">The full report will be licensed for internal organisational use under terms to be approved. Public pricing has not been approved or published. Taxes, licensing, refunds and fulfilment terms are not yet final.</p></div>
 <div class="report-purchase-card"><p class="eyebrow">ENERGY RESEARCH · EDITORIAL REVIEW</p><h3>The Industrial Power-Cost Decision</h3><p><strong>Access:</strong> Not released</p><p><strong>Sample PDF:</strong> Pending editorial and rights approval</p><p><strong>Full PDF:</strong> Purchase and delivery not active</p><button type="button" class="button" disabled aria-describedby="report-access-status">Buy full research report · unavailable</button><p id="report-access-status" role="status">Orders are disabled until editorial approval, pricing, legal review, secure payments and fulfillment pass their release checks.</p><a href="../../index.html#contact" class="report-enquiry-link">See advisory enquiry status</a><p class="report-small">The current enquiry form is a demonstration and does not submit messages.</p></div>
 </div>
 </section>
-<section class="section wrap report-methodology" id="sources" aria-labelledby="sources-title">
-<p class="eyebrow">Source and methodological transparency</p><h2 id="sources-title">Verifiable research, visible limitations.</h2>
+<section class="section wrap report-methodology report-frame" id="sources" data-report-section="sources" aria-labelledby="sources-title">
+<p class="eyebrow">Source and methodological transparency</p><h2 id="sources-title" class="report-sources-heading"><span>Evidence you can examine.</span><small>Assumptions you can challenge.</small></h2>
 <dl>
 <dt>Wholesale market</dt><dd><a href="https://www.smard.de/page/en/topic-article/5892/219038/record-high-for-solar-generation-in-each-quarter" target="_blank" rel="noopener noreferrer">SMARD / Bundesnetzagentur: 2025 market review</a>. The source reports 573 negative-price hours. A separate interval-to-hour reconstruction counts 576 negative hourly means. Definitions remain under reconciliation.</dd>
 <dt>Industrial tariffs</dt><dd><a href="https://ec.europa.eu/eurostat/databrowser/view/nrg_pc_205/default/table" target="_blank" rel="noopener noreferrer">Eurostat, nrg_pc_205</a>, H1 2026, DE / FR / ES, defined consumption bands and exclusion of VAT and recoverable taxes. Some German source cells are provisional.</dd>
