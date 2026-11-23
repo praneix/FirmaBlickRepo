@@ -15,7 +15,18 @@ class ContractSafetyTests(unittest.TestCase):
  def test_customer_contract_and_decisions(self):
   self.assertEqual(len(self.d["positioning"]["customer_segments"]),3)
   self.assertEqual({x["id"] for x in self.d["open_owner_decisions"]},{"SCOPE","PRICE","PAYMENTS","LEGAL","GO_LIVE"})
-  self.assertTrue(all(x["status"]=="AWAITING" for x in self.d["open_owner_decisions"]))
+  statuses={x["id"]:x["status"] for x in self.d["open_owner_decisions"]}
+  self.assertEqual(statuses["SCOPE"],"PROVISIONAL_AWAITING_FINAL_APPROVAL")
+  self.assertEqual(statuses["PRICE"],"PROVISIONAL_AWAITING_FINAL_APPROVAL")
+  for key in ("PAYMENTS","LEGAL","GO_LIVE"):
+   self.assertEqual(statuses[key],"AWAITING")
+  p=self.d["owner_provisional_direction"]
+  self.assertEqual(p["approval_state"],"PROVISIONAL_NOT_APPROVED")
+  self.assertEqual(p["launch_scope_option"],"A")
+  self.assertEqual(p["pricing_eur_ex_tax"],149)
+  self.assertEqual(p["primary_buyer_segment_id"],"cfo")
+  self.assertEqual(self.d["positioning"]["primary_buyer_segment_id"],"cfo")
+  self.assertEqual(self.d["positioning"]["buyer_priority_status"],"PROVISIONAL_OWNER_PREFERENCE")
   self.assertTrue(self.d["release_scope_options"]["A"]["owner_approval_required"])
   self.assertTrue(self.d["release_scope_options"]["B"]["owner_approval_required"])
  def test_evidence_separation(self):
@@ -25,7 +36,7 @@ class ContractSafetyTests(unittest.TestCase):
   self.assertEqual(d["forecast_status"],"BLOCKED_PENDING_INDEPENDENT_REVIEW")
   self.assertTrue(d["do_not_mix_real_and_synthetic"])
  def test_checkout_blocked(self):
-  self.assertEqual(self.d["commercial_choices"]["price_status"],"ILLUSTRATIVE_EXPERIMENT_REQUIRES_OWNER_APPROVAL")
+  self.assertEqual(self.d["commercial_choices"]["price_status"],"PROVISIONAL_OWNER_PREFERENCE_REQUIRES_FINAL_APPROVAL")
   checkout=[x for x in self.d["digital_customer_journey"] if x["step"]=="checkout"][0]
   self.assertEqual(checkout["status"],"DISABLED_UNTIL_PRICE_LEGAL_PROVIDER_APPROVAL")
 if __name__=="__main__":unittest.main()

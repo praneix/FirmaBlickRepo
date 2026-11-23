@@ -57,7 +57,9 @@
     "excluded_customer_types": [
       "consumers",
       "retail traders"
-    ]
+    ],
+    "primary_buyer_segment_id": "cfo",
+    "buyer_priority_status": "PROVISIONAL_OWNER_PREFERENCE"
   },
   "offer": {
     "sku": "FB-ENERGY-DE-2026-01",
@@ -111,7 +113,7 @@
   },
   "commercial_choices": {
     "proposed_price_eur_ex_tax": 149,
-    "price_status": "ILLUSTRATIVE_EXPERIMENT_REQUIRES_OWNER_APPROVAL",
+    "price_status": "PROVISIONAL_OWNER_PREFERENCE_REQUIRES_FINAL_APPROVAL",
     "pricing_basis": "Low-friction first-sale hypothesis; no evidenced willingness-to-pay study",
     "currency_for_buyer": "EUR",
     "merchant_settlement_currency": "TO_VALIDATE",
@@ -201,7 +203,8 @@
         "Secure intake, payment and delivery",
         "Proven legal/QA release gates"
       ],
-      "forecast": "historical-only until separate validation"
+      "forecast": "historical-only until separate validation",
+      "owner_preference": "PROVISIONALLY_SELECTED"
     },
     "B": {
       "name": "Forecast-inclusive V1",
@@ -211,7 +214,8 @@
         "All scope A",
         "Independently approved manufacturing forecast and uncertainty model"
       ],
-      "forecast": "must pass existing issue #14, #49 release controls"
+      "forecast": "must pass existing issue #14, #49 release controls",
+      "owner_preference": "NOT_SELECTED_FOR_INITIAL_RELEASE"
     }
   },
   "first_sale_acceptance": {
@@ -235,13 +239,17 @@
       "id": "SCOPE",
       "decision": "Research-first V1 (A) or forecast-inclusive V1 (B)",
       "default_recommendation": "A",
-      "status": "AWAITING"
+      "status": "PROVISIONAL_AWAITING_FINAL_APPROVAL",
+      "provisional_selection": "A",
+      "owner_statement_date": "2026-11-23"
     },
     {
       "id": "PRICE",
       "decision": "Approve, reject or revise €149 report price and internal-use licence",
       "default_recommendation": "€149 hypothesis",
-      "status": "AWAITING"
+      "status": "PROVISIONAL_AWAITING_FINAL_APPROVAL",
+      "provisional_selection": "€149 excluding applicable taxes",
+      "owner_statement_date": "2026-11-23"
     },
     {
       "id": "PAYMENTS",
@@ -270,5 +278,21 @@
     "Enable automatic purchase or live billing before approval",
     "Store customer card data",
     "Purchase infrastructure without owner approval"
-  ]
+  ],
+  "owner_provisional_direction": {
+    "recorded_at": "2026-11-23",
+    "source": "Direct owner statement, explicitly provisional",
+    "approval_state": "PROVISIONAL_NOT_APPROVED",
+    "launch_scope_option": "A",
+    "pricing_eur_ex_tax": 149,
+    "primary_buyer_segment_id": "cfo",
+    "implementation_use": "Nonproduction product design, research narrative, target buyer qualification and sandbox pricing tests only",
+    "prohibited_inferences": [
+      "No final scope approval",
+      "No customer-facing price publication",
+      "No live billing or checkout activation",
+      "No forecast publication",
+      "No legal, licence, payment-processor or domain approval"
+    ]
+  }
 }
