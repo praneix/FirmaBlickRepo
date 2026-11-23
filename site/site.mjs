@@ -63,16 +63,6 @@ for (const control of [scenario, productivity, start, energy, comparison]) {
 }
 updateScenario();
 
-const topic = get('topic');
-const reports = document.querySelectorAll('[data-topic]');
-function filterReports() {
-  for (const report of reports) {
-    report.hidden = topic.value !== 'all' && report.dataset.topic !== topic.value;
-  }
-}
-topic.addEventListener('input', filterReports);
-filterReports();
-
 const contact = get('contact-form');
 contact.addEventListener('submit', (event) => {
   event.preventDefault();

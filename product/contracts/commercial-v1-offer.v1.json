@@ -1,0 +1,326 @@
+{
+  "schema_version": "1.0.0",
+  "contract_id": "fb-commercial-v1-offer-2026-11",
+  "status": "OWNER_PRODUCT_SPECIFICATION_FROZEN_RELEASE_GATED",
+  "commercial_scope_approval": true,
+  "publication_approved": false,
+  "production_authorized": false,
+  "pricing_approved": true,
+  "legal_approved": false,
+  "checkout_enabled": false,
+  "forecast_approved": false,
+  "business": {
+    "operator_brand": "FirmaBlick",
+    "legal_operator": "DesiPlat",
+    "legal_jurisdiction": "India",
+    "site_domain": "firmablick.com",
+    "target_market": [
+      "Germany",
+      "Austria",
+      "Switzerland"
+    ],
+    "initial_language": "en",
+    "future_localization": "de"
+  },
+  "positioning": {
+    "category": "Evidence-led European industrial decision intelligence",
+    "primary_problem": "Industrial energy exposure and plant-level procurement and investment decisions in Germany",
+    "research_thesis": "Public electricity market averages and plant-delivered cost economics differ; strategic choices require tariff, timing, geography and financing context.",
+    "customer_segments": [
+      {
+        "id": "cfo",
+        "role": "CFO / Finance Director",
+        "buyer_job": "Understand cost exposure and screen investment choices with transparent financial assumptions",
+        "confidence": "hypothesis"
+      },
+      {
+        "id": "plant",
+        "role": "Plant Director / Operations Leader",
+        "buyer_job": "Prioritize operating levers and identify plant information needed for credible site analysis",
+        "confidence": "hypothesis"
+      },
+      {
+        "id": "energy",
+        "role": "Energy Procurement / Strategy Leader",
+        "buyer_job": "Compare tariff structures and flexibility choices, and prepare procurement decision questions",
+        "confidence": "hypothesis"
+      }
+    ],
+    "qualification_fields": [
+      "role",
+      "industry",
+      "manufacturing_geography",
+      "annual_consumption_band_optional",
+      "decision_horizon",
+      "decision_question"
+    ],
+    "excluded_customer_types": [
+      "consumers",
+      "retail traders"
+    ],
+    "primary_buyer_segment_id": "cfo",
+    "buyer_priority_status": "OWNER_FROZEN"
+  },
+  "offer": {
+    "sku": "FB-ENERGY-DE-2026-01",
+    "slug": "germany-industrial-energy-decision-report-2026",
+    "working_title": "The Industrial Power-Cost Decision",
+    "format": "versioned downloadable PDF with appendix and evidence notes",
+    "geography": "Germany with defined France/Spain benchmark",
+    "deliverables": [
+      "Executive decision summary",
+      "SMARD source-backed hourly wholesale-price analysis",
+      "Eurostat industrial tariff comparison with exact bands and definitions",
+      "Industrial plant and procurement archetype implications",
+      "Illustrative and fully labelled BESS cash-flow case",
+      "Strategy options and 90-day management action agenda",
+      "Source and methodology appendix"
+    ],
+    "source_requirements": [
+      "No unsupported material fact",
+      "Primary-source claims traceable to source URL and exact locus",
+      "Exact base/period/unit/adjustment for every data exhibit",
+      "Derived values reproducible",
+      "Any SMARD 573-vs-576 discrepancy resolved or clearly disclosed"
+    ],
+    "not_included": [
+      "Company-specific energy audit",
+      "Site-specific savings guarantee",
+      "Personalized tariff quotation",
+      "Legally binding advisory or investment recommendation",
+      "Unapproved forecasts"
+    ],
+    "sample": {
+      "status": "EDITORIAL_CANDIDATE_AWAITING_PUBLICATION_CLEARANCE",
+      "target_pages": 5,
+      "free": true,
+      "content": [
+        "Cover and scope",
+        "Executive thesis / representative findings",
+        "Two representative charts with definitions",
+        "Selected decision framework and methodology",
+        "Full-report contents and purchase CTA"
+      ],
+      "download_without_registration": true
+    },
+    "full_report": {
+      "status": "EDITORIAL_CANDIDATE_AWAITING_PUBLICATION_CLEARANCE",
+      "protected_delivery": true,
+      "download_format": "pdf",
+      "versioned": true,
+      "access_requires_verified_order": true,
+      "target_pages": 20
+    }
+  },
+  "commercial_choices": {
+    "proposed_price_eur_ex_tax": 149,
+    "price_status": "OWNER_FROZEN_NOT_PUBLIC_UNTIL_LEGAL_AND_PUBLICATION_GATE",
+    "pricing_basis": "Low-friction first-sale hypothesis; no evidenced willingness-to-pay study",
+    "currency_for_buyer": "EUR",
+    "merchant_settlement_currency": "TO_VALIDATE",
+    "licence": "Single legal entity internal evaluation, non-transferable; final contract to be reviewed",
+    "digital_goods_refund_policy": "LEGAL_REVIEW_REQUIRED",
+    "tax_policy": "JURISDICTION_REVIEW_REQUIRED",
+    "invoice_policy": "JURISDICTION_REVIEW_REQUIRED",
+    "merchant_provider": "UNSELECTED_REQUIRES_TECHNICAL_AND_COMPLIANCE_VALIDATION",
+    "candidate_providers": [
+      "Razorpay international card/checkout subject to account activation",
+      "Skydo invoiced cross-border B2B collection subject to product eligibility"
+    ],
+    "payment_modes": [
+      "hosted online checkout candidate",
+      "B2B invoice/payment link fallback candidate"
+    ],
+    "free_customer_briefing": true,
+    "paid_custom_diagnostic": {
+      "state": "NOT_OFFERED_IN_V1_CHECKOUT",
+      "next_step": "Request a diagnostic; quote after qualification"
+    }
+  },
+  "digital_customer_journey": [
+    {
+      "step": "discovery",
+      "path": "/",
+      "cta": "Explore Energy Intelligence"
+    },
+    {
+      "step": "free_intelligence",
+      "path": "/intelligence",
+      "cta": "View historical series and sample"
+    },
+    {
+      "step": "offer",
+      "path": "/research/germany-industrial-energy-decision-report-2026",
+      "cta": "Preview the executive sample"
+    },
+    {
+      "step": "sample",
+      "path": "/research/germany-industrial-energy-decision-report-2026/sample",
+      "cta": "Buy full report"
+    },
+    {
+      "step": "checkout",
+      "path": "/checkout/FB-ENERGY-DE-2026-01",
+      "cta": "Pay securely",
+      "status": "DISABLED_UNTIL_PRICE_LEGAL_PROVIDER_APPROVAL"
+    },
+    {
+      "step": "delivery",
+      "path": "/orders/receipt",
+      "cta": "Open time-limited full-report link",
+      "status": "REQUIRES_VERIFIED_PAYMENT"
+    },
+    {
+      "step": "advisory",
+      "path": "/contact/energy-diagnostic",
+      "cta": "Request a plant energy exposure diagnostic"
+    }
+  ],
+  "verified_data_policy": {
+    "five_sectors": [
+      "C",
+      "C20",
+      "C24",
+      "C28",
+      "C29"
+    ],
+    "source": "Destatis GENESIS",
+    "comparison": "Eurostat sts_inpr_m",
+    "status": "NOT_PUBLICLY_APPROVED",
+    "index_basis": "2021=100 original monthly index",
+    "forecast_status": "BLOCKED_PENDING_INDEPENDENT_REVIEW",
+    "illustrative_simulator_status": "AVAILABLE_WITH_EXPLICIT_SYNTHETIC_LABEL",
+    "do_not_mix_real_and_synthetic": true
+  },
+  "release_scope_options": {
+    "A": {
+      "name": "Research-first commercial V1",
+      "recommended": true,
+      "owner_approval_required": false,
+      "features": [
+        "Certified five-sector history",
+        "Explicitly illustrative scenario controls",
+        "Sellable Energy flagship",
+        "Secure intake, payment and delivery",
+        "Proven legal/QA release gates"
+      ],
+      "forecast": "historical-only until separate validation",
+      "owner_preference": "OWNER_FROZEN"
+    },
+    "B": {
+      "name": "Forecast-inclusive V1",
+      "recommended": false,
+      "owner_approval_required": true,
+      "features": [
+        "All scope A",
+        "Independently approved manufacturing forecast and uncertainty model"
+      ],
+      "forecast": "must pass existing issue #14, #49 release controls",
+      "owner_preference": "DEFERRED_INDEPENDENT_VALIDATION"
+    }
+  },
+  "first_sale_acceptance": {
+    "test_mode_must_pass": [
+      "Verified approved Energy report and exact revision hash",
+      "Unauthenticated sample is reachable",
+      "Offer terms/price/currency visible and accurate",
+      "Sandbox payment success/cancel/failure and duplicate webhook handling",
+      "Order record and invoice workflow",
+      "Signed-link report access enforced",
+      "Incorrect/expired link rejected",
+      "Qualified enquiry stored and notified",
+      "Source/asset licences and legal notices approved",
+      "Desktop/mobile and security checks on exact SHA"
+    ],
+    "production_success": "At least one genuine paid customer transaction and correct report delivery, separately from sandbox",
+    "owner_launch_authorization_required": true
+  },
+  "open_owner_decisions": [
+    {
+      "id": "SCOPE",
+      "decision": "Research-first V1 (A) or forecast-inclusive V1 (B)",
+      "default_recommendation": "A",
+      "status": "OWNER_FROZEN_FOR_PRODUCT_SPECIFICATION",
+      "provisional_selection": "A",
+      "owner_statement_date": "2026-11-23"
+    },
+    {
+      "id": "PRICE",
+      "decision": "Approve, reject or revise €149 report price and internal-use licence",
+      "default_recommendation": "€149 hypothesis",
+      "status": "OWNER_FROZEN_FOR_PRODUCT_SPECIFICATION",
+      "provisional_selection": "€149 excluding applicable taxes",
+      "owner_statement_date": "2026-11-23"
+    },
+    {
+      "id": "PAYMENTS",
+      "decision": "Approve payment provider/merchant configuration after technical compliance preflight",
+      "default_recommendation": "Razorpay hosted checkout if eligible; Skydo invoice fallback",
+      "status": "AWAITING"
+    },
+    {
+      "id": "LEGAL",
+      "decision": "Approve legal operator, tax, transaction, refund and privacy terms after qualified review",
+      "default_recommendation": "No publication until reviewed",
+      "status": "AWAITING"
+    },
+    {
+      "id": "GO_LIVE",
+      "decision": "Approve exact protected release candidate SHA and domain activation",
+      "default_recommendation": "Only after full E2E gates",
+      "status": "AWAITING"
+    }
+  ],
+  "explicit_non_goals": [
+    "Build customer accounts or recurring subscriptions",
+    "Build generalized paid forecasts before independent validation",
+    "Build Automotive or Supply Chain flagship reports",
+    "Publicize IIA/SER applications",
+    "Enable automatic purchase or live billing before approval",
+    "Store customer card data",
+    "Purchase infrastructure without owner approval"
+  ],
+  "owner_provisional_direction": {
+    "recorded_at": "2026-11-23",
+    "source": "Direct owner statement, explicitly provisional",
+    "approval_state": "SUPERSEDED_BY_2026_11_23_FREEZE",
+    "launch_scope_option": "A",
+    "pricing_eur_ex_tax": 149,
+    "primary_buyer_segment_id": "cfo",
+    "implementation_use": "Nonproduction product design, research narrative, target buyer qualification and sandbox pricing tests only",
+    "prohibited_inferences": [
+      "No final scope approval",
+      "No customer-facing price publication",
+      "No live billing or checkout activation",
+      "No forecast publication",
+      "No legal, licence, payment-processor or domain approval"
+    ]
+  },
+  "owner_product_freeze": {
+    "recorded_at": "2026-11-23",
+    "authority": "Owner explicitly instructed 'freeze it' following complete commercial specification",
+    "scope": "RESEARCH_FIRST_V1",
+    "sku": "FB-ENERGY-DE-2026-01",
+    "product_title": "The Industrial Power-Cost Decision",
+    "buyer": "CFO / Finance Director",
+    "secondary_buyers": [
+      "Plant / Operations Director",
+      "Energy Procurement / Strategy"
+    ],
+    "price_eur_excluding_applicable_taxes": 149,
+    "full_pdf_pages": 20,
+    "free_sample_pdf_pages": 5,
+    "sample_ungated": true,
+    "full_delivery": "Paid, authenticated entitlement and time-limited PDF access",
+    "usage_rights": "Internal organisational use, exact licence terms pending qualified legal review",
+    "forecast": "EXCLUDED_UNTIL_VALIDATED",
+    "production_publication_authorized": false,
+    "internal_text_release_policy": "ZERO internal review notices, RC numbers, candidate statuses, placeholder art, disabled-CTA demo messages or approval workflow copy in final customer-facing site, sample, full report, emails, checkout or invoices",
+    "pending_separate_approvals": [
+      "Legal operator/privacy/licensing/tax/refund",
+      "Source and asset rights and final editorial",
+      "Payment processor and settlement",
+      "Exact release SHA and production/domain activation"
+    ]
+  }
+}
