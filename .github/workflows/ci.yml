@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'site/**'
+      - 'commerce/**'
       - 'research/**'
       - 'docs/integration/**'
       - '.github/workflows/cv1-02-integration-assurance.yml'
