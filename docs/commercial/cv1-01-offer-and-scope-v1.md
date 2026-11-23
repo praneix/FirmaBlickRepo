@@ -1,8 +1,32 @@
-# FirmaBlick Commercial V1 — Offer and Scope Contract (PROPOSED)
+# FirmaBlick Commercial V1 — Owner-Frozen Product Specification (Release Gated)
 **Issue:** #39 · **Version:** 1.0.0 · **Date:** 2026-11-20 · **Status:** Pending owner commercial approval
 **Machine-readable contract:** `product/contracts/commercial-v1-offer.v1.json`
 
-## Owner's provisional commercial direction — 23 November 2026
+## OWNER-FROZEN PRODUCT SPECIFICATION — 23 NOVEMBER 2026
+
+**Decision:** The owner explicitly instructed to freeze the previously recommended Energy Research Edition commercial specification. This section supersedes provisional SCOPE, PRICE and buyer assumptions elsewhere in this historical design record. It authorises **nonproduction engineering against the frozen product**; it does not authorise public release, live billing or production/domain changes.
+
+| Frozen element | Final product specification |
+|---|---|
+| Launch | Research-first V1 (Scope A); forecast excluded pending independent validation |
+| First SKU | `FB-ENERGY-DE-2026-01` |
+| Title | **The Industrial Power-Cost Decision** |
+| Primary buyer | CFO / Finance Director; plant/operations and energy-procurement leaders secondary |
+| Paid deliverable | 20-page versioned, source-cited premium PDF, with methodology and evidence notes |
+| Free deliverable | Five-page executive sample, downloadable without registration |
+| Price | **€149 excluding applicable taxes**, frozen product list price; tax display, payment method and legal terms must still pass preflight |
+| Usage | Internal organisational use; precise licence and redistribution rights require qualified legal review |
+| Commercial journey | Research page → free sample → hosted sandbox/approved checkout → verified order → expiring secure report delivery → receipt/invoice and optional qualified advisory enquiry |
+| Content | Executive summary; original SMARD market analysis; like-for-like Eurostat tariff comparison; plant exposure; illustrative and fully qualified investment sensitivity; 90-day action programme |
+| Exclusions | Site-specific audit, guaranteed savings, custom tariff offer, unapproved forecasts, subscriptions, Automotive and Supply Chain products |
+
+**Client-facing copy hygiene (hard release gate):** Internal-review strings, draft labels, RC identifiers, sample placeholders, mock charts, internal approval notices, disabled-button explanations, sandbox/test identifiers, temporary vendor notices and 'publication pending' copy must be removed from all customer-facing pages, report PDFs, executive sample, receipts, payment pages and transactional emails **before release**. Keep accurate financial-model caveats, source methodology, uncertainty, usage restrictions and legally required disclosures. An unapproved page remains protected/noindex; it must not masquerade as a functioning public offer.
+
+**Reserved gates:** Source/rights and editorial publication approval, final operator identity, tax/VAT/GST and invoice treatment, refund/licence/privacy/terms, processor eligibility, actual paid-asset private storage, secure webhook and entitlement tests, exact SHA owner go-live approval, production/DNS. All remain blocked until separately accepted. Never infer these approvals from the product freeze.
+
+**Implementation sequence:** finish release-ready copy and zero-placeholder acceptance lint → immutable approved sample/full PDF assets and manifest (#42/#43) → secure lead intake (#46) → hosted sandbox checkout/webhooks and protected fulfillment (#45) → legal/privacy/rights (#47) → full E2E rehearsal (#54). No live purchase until all gates pass.
+
+## Historical provisional direction — superseded 23 November 2026
 
 The owner explicitly selected the following **provisional** preferences. These guide only nonproduction engineering and market validation; they do **not** constitute final business approval:
 
