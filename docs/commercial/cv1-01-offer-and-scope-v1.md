@@ -2,6 +2,22 @@
 **Issue:** #39 · **Version:** 1.0.0 · **Date:** 2026-11-20 · **Status:** Pending owner commercial approval
 **Machine-readable contract:** `product/contracts/commercial-v1-offer.v1.json`
 
+## Owner's provisional commercial direction — 23 November 2026
+
+The owner explicitly selected the following **provisional** preferences. These guide only nonproduction engineering and market validation; they do **not** constitute final business approval:
+
+| Dimension | Preferred working assumption | Release approval |
+|---|---|---|
+| Commercial release architecture | **A: Research-first V1**; maintain independent forecast validation workstream | Not yet granted |
+| Energy standalone research price | **€149 excluding applicable taxes**; no observed price elasticity or willingness-to-pay evidence yet | Not yet granted |
+| Primary target decision-maker | **CFO / Finance Director** | Buyer priority selected for design; market validation pending |
+
+**Consequent design priorities:** Executive summary first; transparent delivered-electricity-cost bridge; gross margin/EBITDA and cash sensitivity; capital-allocation cases and downside; benchmark definition and evidence provenance; decision and 90-day action summary. Secondary audiences remain plant operations and energy procurement. Marketing text may be sharpened for CFOs but must avoid implying expert buy-in or verified willingness to pay.
+
+**Commercial evaluation:** A €149 report requires approximately 67 paid purchases to reach €10,000 in *gross invoice value before fees, refunds, taxes and costs*, assuming all purchases are at full list price. Conversion, CAC, repeat purchasing and downstream advisory revenue remain empirical hypotheses; validate separately. Choosing A improves time-to-market by deferring unvalidated model predictions without changing the standing forecast quality gate or abolishing the original forecasting roadmap.
+
+**Reserved authority:** `commercial_scope_approval=false`, `pricing_approved=false`, `publication_approved=false`, `legal_approved=false`, `checkout_enabled=false`, `production_authorized=false`, `forecast_approved=false`. Payments, legal terms and GO_LIVE decisions stay AWAITING. The PRICE and SCOPE decisions have state `PROVISIONAL_AWAITING_FINAL_APPROVAL`. No unapproved €149 amount may appear as a live offer, invoice or checkout total.
+
 ## Executive decision
 **Recommended commercial release:** Scope A, research-first. An evidence-led German industrial-intelligence website provides source-backed manufacturing history and transparent illustrative scenarios. A single genuine paid Energy publication opens the first transaction; a free qualified diagnostic enquiry opens the higher-value advisory conversation. This should launch only after owner approval and documented legal/data/payment gates.
 
@@ -24,7 +40,7 @@
 - **Rights:** Single company/internal evaluation usage is a licensing *proposal* pending legal terms.
 
 ## Pricing and payment: proposals, not authorisations
-- **Suggested experiment:** **€149** per full report, excluding applicable taxes. This is a positioning hypothesis, **not** an empirically benchmarked market price and not approved.
+- **Owner's provisional price preference:** **€149** per full report, excluding applicable taxes. This remains a positioning hypothesis, **not** an empirically benchmarked market price and not approved for public sale.
 - **Diagnostic:** Free, qualified discovery request, followed by an individually scoped paid advisory quote only when the buyer consents; no fixed diagnostic fee in V1 checkout.
 - **Payment:** Investigate existing eligible India-merchant Razorpay international checkout for digital-goods access and provider-specific activation. Skydo is a potential invoice/B2B cross-border collection fallback. Validate eligibility, settlement, payments, tax invoices, export-of-services classification, refund procedures and chargebacks; do not bind provider or enable charging now.
 - **Market validation:** Obtain measurable outreach and landing-page conversion evidence for price fit rather than extrapolating from unrelated high-ticket research reports. No revenue guarantee.
@@ -66,7 +82,7 @@ Existing single-page hash navigation may be incrementally migrated to route-like
 | A10 | First independently observed, genuine paid purchase plus correct delivery after authorised launch | postlaunch |
 
 ## Owner decision register
-Five decisions remain RESERVED. They are listed as `open_owner_decisions` in the JSON, with status `AWAITING`. The team can advance source, editorial, sample and compliance engineering while they remain pending, and must block commercial activation. No assumed approval from silence or the generic engineering standing mandate.
+Five decisions remain RESERVED. They are listed as `open_owner_decisions` in the JSON. SCOPE and PRICE are marked `PROVISIONAL_AWAITING_FINAL_APPROVAL`; PAYMENTS, LEGAL and GO_LIVE remain `AWAITING`. The team can advance source, editorial, sample and compliance engineering while they remain pending, and must block commercial activation. No assumed approval from silence or the generic engineering standing mandate.
 
 ## Explicit non-goals
 No subscriptions, user accounts, private uploads, generic LLM chat agent, simultaneous automotive/supply-chain production, uncalibrated predictive claims, staff-like service promises or irreversible production data changes. The research orchestration engine is a separately gated P1 engineering capability, and V1 report fulfillment can operate using one approved manually frozen Energy artifact.
