@@ -313,3 +313,9 @@ footer { background: #0b1e2d; color: var(--ivory); padding-top: 48px; }
  .report-page{scroll-snap-type:none}
  .report-page .report-rail-link span{transition:none}
 }
+
+/* Owner-approved polish: three principles and two-line publication headline. */
+.report-page .report-scope-aside ul.report-scope-aside-end{list-style:disc outside;padding:17px 0 0 18px;margin:8px 0 0;border-top:1px solid #cbd0cd;font:.75rem/1.7 var(--mono);color:#5f6c70}
+.report-page .report-scope-aside ul.report-scope-aside-end li{display:list-item;padding:2px 0}
+.report-page .report-purchase h2{max-width:27ch;text-wrap:balance}
+@media (max-width:740px){.report-page .report-purchase h2{max-width:100%;font-size:clamp(2rem,7vw,2.65rem)}}
