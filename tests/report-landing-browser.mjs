@@ -38,7 +38,7 @@ try{
   assert.equal(await page.locator('.scope-lens').count(),3);
   assert.match(await page.locator('.report-sources-heading small').innerText(),/Assumptions you can challenge/i);
   const snap=await page.evaluate(()=>getComputedStyle(document.body).scrollSnapType);
-  if(device==='desktop')assert.match(snap,/proximity/,'Controlled desktop section snap');
+  if(device==='desktop')assert.match(snap,/^y(?: proximity)?$/,'Controlled desktop section snap');
   else assert.match(snap,/none/,'Avoid forced scroll snapping on small screens');
   await page.locator('.report-rail-link[href="#scope"]').click();
   assert.equal(await page.locator('.report-rail-link[href="#scope"]').getAttribute('aria-current'),'location');
