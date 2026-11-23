@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0.0",
+  "publication_state": "protected_preview_only",
+  "geography": "DE-LU",
+  "metric": "Monthly mean day-ahead wholesale electricity price",
+  "year": 2025,
+  "unit": "EUR/MWh",
+  "source_name": "Fraunhofer Energy-Charts price API, original Bundesnetzagentur | SMARD.de, CC BY 4.0",
+  "source_url": "https://api.energy-charts.info/price?bzn=DE-LU&start=2025-01-01&end=2025-12-31",
+  "source_raw_git_blob_sha": "8ac19f91ae6d413f3d8f2cc16585af72e0c8fa40",
+  "method": "Months aggregated from reconstructed 8760 hourly equivalents; timezone Europe/Berlin; original 15387 mixed resolution intervals",
+  "annual_time_weighted_mean_eur_mwh": 89.32172,
+  "months": [
+    {
+      "period": "2025-01",
+      "mean_eur_mwh": 114.14,
+      "hours": 744
+    },
+    {
+      "period": "2025-02",
+      "mean_eur_mwh": 128.52,
+      "hours": 672
+    },
+    {
+      "period": "2025-03",
+      "mean_eur_mwh": 94.73,
+      "hours": 743
+    },
+    {
+      "period": "2025-04",
+      "mean_eur_mwh": 77.94,
+      "hours": 720
+    },
+    {
+      "period": "2025-05",
+      "mean_eur_mwh": 67.34,
+      "hours": 744
+    },
+    {
+      "period": "2025-06",
+      "mean_eur_mwh": 63.99,
+      "hours": 720
+    },
+    {
+      "period": "2025-07",
+      "mean_eur_mwh": 87.8,
+      "hours": 744
+    },
+    {
+      "period": "2025-08",
+      "mean_eur_mwh": 76.99,
+      "hours": 744
+    },
+    {
+      "period": "2025-09",
+      "mean_eur_mwh": 83.51,
+      "hours": 720
+    },
+    {
+      "period": "2025-10",
+      "mean_eur_mwh": 84.4,
+      "hours": 745
+    },
+    {
+      "period": "2025-11",
+      "mean_eur_mwh": 101.88,
+      "hours": 720
+    },
+    {
+      "period": "2025-12",
+      "mean_eur_mwh": 93.47,
+      "hours": 744
+    }
+  ]
+}
