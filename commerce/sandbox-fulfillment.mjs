@@ -4,7 +4,8 @@
 import {createHmac, randomUUID, timingSafeEqual} from 'node:crypto';
 
 export const SKU='FB-ENERGY-DE-2026-01';
-export const AMOUNT_MINOR=14900;
+export const CATALOGUE_VERSION='2026-11-24';
+export const AMOUNT_MINOR=99000;
 const equal=(a,b)=>{
  const x=Buffer.from(String(a)),y=Buffer.from(String(b));
  return x.length===y.length && timingSafeEqual(x,y);
@@ -27,7 +28,7 @@ export class SandboxFulfillment {
   if(sku!==SKU)throw Error('Unsupported SKU');
   if(typeof email!=='string'||email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw Error('Invalid buyer email');
   const id=randomUUID();
-  const order={id,sku,email:email.trim().toLowerCase(),amountMinor:AMOUNT_MINOR,currency:'EUR',state:'pending',entitlement:false,createdAt:this.clock(),paidAt:null,refundedAt:null};
+  const order={id,sku,email:email.trim().toLowerCase(),catalogueVersion:CATALOGUE_VERSION,amountMinor:AMOUNT_MINOR,currency:'EUR',state:'pending',entitlement:false,createdAt:this.clock(),paidAt:null,refundedAt:null};
   this.store.orders.set(id,order);
   return {orderId:id,sku,currency:'EUR',amountMinor:AMOUNT_MINOR,state:'pending'};
  }
@@ -43,7 +44,7 @@ export class SandboxFulfillment {
   const order=this.store.orders.get(event.orderId);
   if(!order)throw Error('Unknown order');
   if(event.type==='captured'){
-   if(event.amountMinor!==order.amountMinor||event.currency!==order.currency||event.sku!==order.sku)throw Error('Payment reconciliation failed');
+   if(order.catalogueVersion!==CATALOGUE_VERSION||order.amountMinor!==AMOUNT_MINOR||order.currency!=='EUR'||order.sku!==SKU||event.amountMinor!==order.amountMinor||event.currency!==order.currency||event.sku!==order.sku)throw Error('Payment reconciliation failed');
    if(order.state!=='pending')throw Error('Cannot capture nonpending order');
    order.state='paid';order.entitlement=true;order.paidAt=this.clock();
   }else if(event.type==='refunded'){
