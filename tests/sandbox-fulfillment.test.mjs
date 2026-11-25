@@ -9,7 +9,7 @@ const event=(engine,body)=>{const raw=JSON.stringify(body);return engine.webhook
 const capture=(engine,orderId,id='event-capture')=>event(engine,{id,orderId,type:'captured',sku:SKU,amountMinor:AMOUNT_MINOR,currency:'EUR'});
 test('happy path: paid -> secure PDF, correct SKU and exact price',async()=>{
  const engine=create();const order=engine.createOrder({email:'finance@example.org'});
- assert.equal(order.amountMinor,14900);assert.equal(order.state,'pending');
+ assert.equal(order.amountMinor,99000);assert.equal(order.state,'pending');
  assert.throws(()=>engine.issueLink(order.orderId),/entitlement/);
  assert.equal(capture(engine,order.orderId).state,'paid');
  const link=engine.issueLink(order.orderId);const asset=await engine.redeem(link);
@@ -22,7 +22,7 @@ test('fail closed: bad signature, incorrect amount, unsupported SKU',()=>{
  const raw=JSON.stringify({id:'bad',orderId:order.orderId,type:'captured',sku:SKU,amountMinor:14900,currency:'EUR'});
  assert.equal(verifyWebhook(secret,raw,'0'.repeat(64)),false);
  assert.throws(()=>engine.webhook(raw,'0'.repeat(64)),/signature/);
- assert.throws(()=>event(engine,{id:'wrong',orderId:order.orderId,type:'captured',sku:SKU,amountMinor:14901,currency:'EUR'}),/reconciliation/);
+ assert.throws(()=>event(engine,{id:'wrong',orderId:order.orderId,type:'captured',sku:SKU,amountMinor:14900,currency:'EUR'}),/reconciliation/);
  assert.equal(engine.getOrder(order.orderId).state,'pending');
  assert.throws(()=>engine.createOrder({email:'x@y.org',sku:'OTHER'}),/SKU/);
 });
@@ -55,4 +55,16 @@ test('a duplicate event id cannot be applied to a second order',()=>{
  capture(engine,a.orderId,'same-event');
  assert.deepEqual(capture(engine,b.orderId,'same-event'),{duplicate:true});
  assert.equal(engine.getOrder(b.orderId).state,'pending');
+});
+
+test('legacy pending order cannot settle at superseded price',()=>{
+ const engine=create(),order=engine.createOrder({email:'finance@example.org'});
+ const stored=engine.store.orders.get(order.orderId);stored.amountMinor=14900;delete stored.catalogueVersion;
+ assert.throws(()=>event(engine,{id:'legacy',orderId:order.orderId,type:'captured',sku:SKU,amountMinor:14900,currency:'EUR'}),/reconciliation/);
+ assert.equal(engine.getOrder(order.orderId).entitlement,false);
+});
+test('wrong currency and SKU fail closed at approved price',()=>{
+ const engine=create(),order=engine.createOrder({email:'finance@example.org'});
+ for(const [sku,currency] of [[SKU,'USD'],['OTHER','EUR']])assert.throws(()=>event(engine,{id:'mismatch',orderId:order.orderId,type:'captured',sku,amountMinor:99000,currency}),/reconciliation/);
+ assert.equal(engine.getOrder(order.orderId).state,'pending');
 });
