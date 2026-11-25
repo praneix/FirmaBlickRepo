@@ -3,9 +3,10 @@
 // adapter before enabling any deployed purchase path. No real payment calls.
 import {createHmac, randomUUID, timingSafeEqual} from 'node:crypto';
 
-export const SKU='FB-ENERGY-DE-2026-01';
-export const CATALOGUE_VERSION='2026-11-24';
-export const AMOUNT_MINOR=99000;
+import {ENERGY_SKU, CATALOGUE_VERSION, sandboxOffer} from './catalogue.mjs';
+export const SKU=ENERGY_SKU;
+export {CATALOGUE_VERSION};
+export const AMOUNT_MINOR=sandboxOffer(SKU).amountMinor;
 const equal=(a,b)=>{
  const x=Buffer.from(String(a)),y=Buffer.from(String(b));
  return x.length===y.length && timingSafeEqual(x,y);
