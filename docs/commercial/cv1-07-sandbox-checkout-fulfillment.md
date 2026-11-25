@@ -2,7 +2,7 @@
 
 ## Scope and status
 
-**Sandbox reference engine implemented, not a live payment provider integration.** Source: `commerce/sandbox-fulfillment.mjs`. Test: `tests/sandbox-fulfillment.test.mjs`. SKU `FB-ENERGY-DE-2026-01`; frozen product price EUR 149 excluding taxes, represented as 14900 minor units. The fixture PDF is deliberately synthetic and never sold.
+**Sandbox reference engine implemented, not a live payment provider integration.** Source: `commerce/sandbox-fulfillment.mjs`. Test: `tests/sandbox-fulfillment.test.mjs`. SKU `FB-ENERGY-DE-2026-01`; approved flagship price EUR 990 excluding taxes, represented as 99000 minor units (catalogue 2026-11-24; EUR149 superseded). The fixture PDF is deliberately synthetic and never sold.
 
 The engine models buyer order creation, exact amount/currency/SKU reconciliation, HMAC-signed sandbox webhook events, duplicate event idempotency, payment capture, cancellation, failure, refund, entitlement, signed time-limited download claims, PDF magic-byte check, and post-refund access revocation. Tests must pass on the exact PR SHA.
 
