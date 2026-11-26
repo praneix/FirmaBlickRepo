@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'site/**'
+      - 'research/arie/**'
       - 'tests/**'
       - 'scripts/**'
       - 'package*.json'
@@ -20,11 +21,33 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
-      - run: npm ci --ignore-scripts
-      - run: npm run build
-      - run: npm test
-      - name: Confirm generated files
+      - name: Verify ARIE research contract
+        if: ${{ hashFiles('tests/arie/*.test.mjs') != '' }}
+        run: node --test tests/arie/*.test.mjs
+      - name: Determine website build availability
+        id: website
+        shell: bash
+        run: |
+          if [ -f package.json ]; then
+            if [ ! -f package-lock.json ]; then
+              echo "::error::Website package.json exists without required package-lock.json"
+              exit 1
+            fi
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Install website dependencies
+        if: ${{ steps.website.outputs.available == 'true' }}
+        run: npm ci --ignore-scripts
+      - name: Build website
+        if: ${{ steps.website.outputs.available == 'true' }}
+        run: npm run build
+      - name: Test website
+        if: ${{ steps.website.outputs.available == 'true' }}
+        run: npm test
+      - name: Confirm generated website files
+        if: ${{ steps.website.outputs.available == 'true' }}
         run: |
           test -f dist/index.html
           test -f dist/site.mjs
