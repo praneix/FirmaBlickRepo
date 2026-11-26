@@ -113,9 +113,9 @@
     }
   },
   "commercial_choices": {
-    "proposed_price_eur_ex_tax": 149,
+    "proposed_price_eur_ex_tax": 990,
     "price_status": "OWNER_FROZEN_NOT_PUBLIC_UNTIL_LEGAL_AND_PUBLICATION_GATE",
-    "pricing_basis": "Low-friction first-sale hypothesis; no evidenced willingness-to-pay study",
+    "pricing_basis": "Founder-approved 2026-11-24 flagship catalogue; supersedes 2026-11-23 EUR149 hypothesis",
     "currency_for_buyer": "EUR",
     "merchant_settlement_currency": "TO_VALIDATE",
     "licence": "Single legal entity internal evaluation, non-transferable; final contract to be reviewed",
@@ -135,7 +135,8 @@
     "paid_custom_diagnostic": {
       "state": "NOT_OFFERED_IN_V1_CHECKOUT",
       "next_step": "Request a diagnostic; quote after qualification"
-    }
+    },
+    "catalogue_version": "2026-11-24"
   },
   "digital_customer_journey": [
     {
@@ -246,11 +247,11 @@
     },
     {
       "id": "PRICE",
-      "decision": "Approve, reject or revise €149 report price and internal-use licence",
-      "default_recommendation": "€149 hypothesis",
+      "decision": "Approved EUR990 flagship price; licence subject to legal review",
+      "default_recommendation": "EUR990",
       "status": "OWNER_FROZEN_FOR_PRODUCT_SPECIFICATION",
-      "provisional_selection": "€149 excluding applicable taxes",
-      "owner_statement_date": "2026-11-23"
+      "provisional_selection": "€990 excluding applicable taxes",
+      "owner_statement_date": "2026-11-24"
     },
     {
       "id": "PAYMENTS",
@@ -321,6 +322,7 @@
       "Source and asset rights and final editorial",
       "Payment processor and settlement",
       "Exact release SHA and production/domain activation"
-    ]
+    ],
+    "pricing_status": "SUPERSEDED_BY_2026_11_24_CATALOGUE"
   }
 }

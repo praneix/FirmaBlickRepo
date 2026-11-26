@@ -3,8 +3,10 @@
 // adapter before enabling any deployed purchase path. No real payment calls.
 import {createHmac, randomUUID, timingSafeEqual} from 'node:crypto';
 
-export const SKU='FB-ENERGY-DE-2026-01';
-export const AMOUNT_MINOR=14900;
+import {ENERGY_SKU, CATALOGUE_VERSION, sandboxOffer} from './catalogue.mjs';
+export const SKU=ENERGY_SKU;
+export {CATALOGUE_VERSION};
+export const AMOUNT_MINOR=sandboxOffer(SKU).amountMinor;
 const equal=(a,b)=>{
  const x=Buffer.from(String(a)),y=Buffer.from(String(b));
  return x.length===y.length && timingSafeEqual(x,y);
@@ -27,9 +29,9 @@ export class SandboxFulfillment {
   if(sku!==SKU)throw Error('Unsupported SKU');
   if(typeof email!=='string'||email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw Error('Invalid buyer email');
   const id=randomUUID();
-  const order={id,sku,email:email.trim().toLowerCase(),amountMinor:AMOUNT_MINOR,currency:'EUR',state:'pending',entitlement:false,createdAt:this.clock(),paidAt:null,refundedAt:null};
+  const order={id,sku,email:email.trim().toLowerCase(),catalogueVersion:CATALOGUE_VERSION,amountMinor:AMOUNT_MINOR,currency:'EUR',state:'pending',entitlement:false,createdAt:this.clock(),paidAt:null,refundedAt:null};
   this.store.orders.set(id,order);
-  return {orderId:id,sku,currency:'EUR',amountMinor:AMOUNT_MINOR,state:'pending'};
+  return {orderId:id,sku,currency:'EUR',amountMinor:AMOUNT_MINOR,catalogueVersion:order.catalogueVersion,state:'pending'};
  }
  // Caller must verify raw provider signature before this state transition.
  // Sandbox events emulate provider states; production must verify actual captured
@@ -43,7 +45,7 @@ export class SandboxFulfillment {
   const order=this.store.orders.get(event.orderId);
   if(!order)throw Error('Unknown order');
   if(event.type==='captured'){
-   if(event.amountMinor!==order.amountMinor||event.currency!==order.currency||event.sku!==order.sku)throw Error('Payment reconciliation failed');
+   if(order.catalogueVersion!==CATALOGUE_VERSION||order.amountMinor!==AMOUNT_MINOR||order.currency!=='EUR'||order.sku!==SKU||event.amountMinor!==order.amountMinor||event.currency!==order.currency||event.sku!==order.sku)throw Error('Payment reconciliation failed');
    if(order.state!=='pending')throw Error('Cannot capture nonpending order');
    order.state='paid';order.entitlement=true;order.paidAt=this.clock();
   }else if(event.type==='refunded'){
@@ -76,5 +78,5 @@ export class SandboxFulfillment {
   if(!asset||!Buffer.isBuffer(asset.bytes)||asset.bytes.subarray(0,5).toString()!=='%PDF-')throw Error('Approved private PDF unavailable');
   return {bytes:asset.bytes,contentType:'application/pdf',fileName:asset.fileName};
  }
- getOrder(id){const o=this.store.orders.get(id);if(!o)throw Error('Unknown order');return {orderId:o.id,sku:o.sku,currency:o.currency,amountMinor:o.amountMinor,state:o.state,entitlement:o.entitlement};}
+ getOrder(id){const o=this.store.orders.get(id);if(!o)throw Error('Unknown order');return {orderId:o.id,sku:o.sku,currency:o.currency,amountMinor:o.amountMinor,catalogueVersion:o.catalogueVersion,state:o.state,entitlement:o.entitlement};}
 }
