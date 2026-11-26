@@ -31,7 +31,7 @@ export class SandboxFulfillment {
   const id=randomUUID();
   const order={id,sku,email:email.trim().toLowerCase(),catalogueVersion:CATALOGUE_VERSION,amountMinor:AMOUNT_MINOR,currency:'EUR',state:'pending',entitlement:false,createdAt:this.clock(),paidAt:null,refundedAt:null};
   this.store.orders.set(id,order);
-  return {orderId:id,sku,currency:'EUR',amountMinor:AMOUNT_MINOR,state:'pending'};
+  return {orderId:id,sku,currency:'EUR',amountMinor:AMOUNT_MINOR,catalogueVersion:order.catalogueVersion,state:'pending'};
  }
  // Caller must verify raw provider signature before this state transition.
  // Sandbox events emulate provider states; production must verify actual captured
@@ -78,5 +78,5 @@ export class SandboxFulfillment {
   if(!asset||!Buffer.isBuffer(asset.bytes)||asset.bytes.subarray(0,5).toString()!=='%PDF-')throw Error('Approved private PDF unavailable');
   return {bytes:asset.bytes,contentType:'application/pdf',fileName:asset.fileName};
  }
- getOrder(id){const o=this.store.orders.get(id);if(!o)throw Error('Unknown order');return {orderId:o.id,sku:o.sku,currency:o.currency,amountMinor:o.amountMinor,state:o.state,entitlement:o.entitlement};}
+ getOrder(id){const o=this.store.orders.get(id);if(!o)throw Error('Unknown order');return {orderId:o.id,sku:o.sku,currency:o.currency,amountMinor:o.amountMinor,catalogueVersion:o.catalogueVersion,state:o.state,entitlement:o.entitlement};}
 }
