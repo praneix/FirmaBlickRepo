@@ -15,3 +15,20 @@ test('publication and language schedules match approved amounts',()=>{
  assert.deepEqual(Object.values(ADDITIONAL_LANGUAGE_PRICES),[3900,5900,8900,16900,39900]);
  assert.deepEqual(Object.values(ANNUAL_LANGUAGE_PRICES),[24900,39900,54900,69900]);
 });
+
+import {researchEnquiryOffer,RESEARCH_ENQUIRY_PRICES,CATALOGUE_VERSION} from '../commerce/catalogue.mjs';
+test('all research enquiry prices are indicative and checkout disabled',()=>{
+ const expected={sponsored:[149000,299000,499000],exclusive:[299000,599000,999000],private:[449000,899000,1499000]};
+ for(const [kind,prices] of Object.entries(expected)){
+  assert.deepEqual(Object.values(RESEARCH_ENQUIRY_PRICES[kind]),prices);
+  for(const [i,format] of ['brief','outlook','flagship'].entries()){
+   const offer=researchEnquiryOffer(kind,format);
+   assert.equal(offer.amountMinor,prices[i]);assert.equal(offer.currency,'EUR');
+   assert.equal(offer.catalogueVersion,CATALOGUE_VERSION);assert.equal(offer.indicative,true);
+   assert.equal(offer.checkoutEnabled,false);assert.equal(offer.from,kind==='private');
+   assert.equal(offer.requiresScopeRightsAndFeasibilityApproval,true);
+  }
+ }
+ assert.throws(()=>researchEnquiryOffer('toString','brief'),/Unsupported/);
+ assert.throws(()=>researchEnquiryOffer('sponsored','toString'),/Unsupported/);
+});
