@@ -4,6 +4,9 @@ export const MAX_LEASE_MS = 24 * 60 * 60 * 1000;
 
 const nonempty = value => typeof value === 'string' && value.trim().length > 0;
 const copy = value => structuredClone(value);
+const snapshotLease = lease => ({
+  jobId: lease?.jobId, owner: lease?.owner, attempt: lease?.attempt
+});
 
 export class ResearchJobs {
   #jobs = new Map();
@@ -39,13 +42,15 @@ export class ResearchJobs {
         maxAttempts < 1 || maxAttempts > MAX_ATTEMPTS) {
       throw new TypeError('invalid job');
     }
+    const storedPayload = copy(payload);
+    const now = this.#now();
     if (this.#jobs.has(id)) throw new Error('duplicate job id');
     const keys = this.#keys.get(commissionId);
     if (keys?.has(idempotencyKey)) throw new Error('duplicate idempotency key');
     const job = {
       version: CONTRACT_VERSION, id, commissionId, idempotencyKey, taskKind,
-      payload: copy(payload), priority, state: 'queued', attemptCount: 0,
-      maxAttempts, leaseOwner: null, leaseExpiresAt: null, updatedAt: this.#now()
+      payload: storedPayload, priority, state: 'queued', attemptCount: 0,
+      maxAttempts, leaseOwner: null, leaseExpiresAt: null, updatedAt: now
     };
     this.#jobs.set(id, job);
     if (!keys) this.#keys.set(commissionId, new Set([idempotencyKey]));
@@ -81,10 +86,11 @@ export class ResearchJobs {
   }
 
   complete(lease, result) {
-    const job = this.#job(lease?.jobId);
-    const now = this.#now();
-    if (!this.#owns(job, lease, now)) return {accepted: false};
+    const handle = snapshotLease(lease);
     const storedResult = copy(result);
+    const now = this.#now();
+    const job = this.#job(handle.jobId);
+    if (!this.#owns(job, handle, now)) return {accepted: false};
     job.state = 'completed';
     job.result = storedResult;
     job.leaseOwner = null;
@@ -94,9 +100,10 @@ export class ResearchJobs {
   }
 
   fail(lease) {
-    const job = this.#job(lease?.jobId);
+    const handle = snapshotLease(lease);
     const now = this.#now();
-    if (!this.#owns(job, lease, now)) return false;
+    const job = this.#job(handle.jobId);
+    if (!this.#owns(job, handle, now)) return false;
     job.state = job.attemptCount >= job.maxAttempts ? 'failed' : 'queued';
     job.leaseOwner = null;
     job.leaseExpiresAt = null;
@@ -107,8 +114,8 @@ export class ResearchJobs {
   stop(id, state) {
     if (state !== 'blocked' && state !== 'cancelled') throw new TypeError('invalid stop state');
     const job = this.#job(id);
-    if (job.state !== 'queued' && job.state !== 'leased') return false;
     const now = this.#now();
+    if (job.state !== 'queued' && job.state !== 'leased') return false;
     job.state = state;
     job.leaseOwner = null;
     job.leaseExpiresAt = null;
@@ -117,11 +124,13 @@ export class ResearchJobs {
   }
 
   canDispatch(lease, evidence) {
-    const job = this.#job(lease?.jobId);
-    return this.#owns(job, lease, this.#now()) &&
-      evidence?.eligibilityVerified === true &&
-      evidence?.budgetReserved === true &&
-      evidence?.regionVerified === true &&
-      evidence?.nonproductionAuthorized === true;
+    const handle = snapshotLease(lease);
+    const gates = [
+      evidence?.eligibilityVerified, evidence?.budgetReserved,
+      evidence?.regionVerified, evidence?.nonproductionAuthorized
+    ];
+    const now = this.#now();
+    const job = this.#job(handle.jobId);
+    return this.#owns(job, handle, now) && gates.every(value => value === true);
   }
 }

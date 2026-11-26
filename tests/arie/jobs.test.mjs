@@ -129,3 +129,42 @@ test('invalid lease and clock inputs fail closed', () => {
   assert.throws(() => overflow.claim(input.id, 'worker', 1), /expiry/);
   assert.equal(overflow.get(input.id).state, 'queued');
 });
+
+test('reentrant payload cloning cannot create duplicate idempotency keys', () => {
+  const {jobs, input} = fixture();
+  const nested = {...input, id: 'nested', idempotencyKey: 'new-key', payload: {}};
+  const payload = {
+    get chapter() {
+      jobs.create(nested);
+      return 1;
+    }
+  };
+  assert.throws(() => jobs.create({...nested, id: 'outer', payload}), /idempotency/);
+  assert.equal(jobs.get('nested').id, 'nested');
+  assert.throws(() => jobs.get('outer'), /unknown/);
+});
+
+test('reentrant result and gate getters cannot bypass lease state', () => {
+  const first = fixture();
+  const lease = first.jobs.claim(first.input.id, 'worker', 100);
+  const result = {
+    get value() {
+      first.jobs.stop(first.input.id, 'cancelled');
+      return 42;
+    }
+  };
+  assert.deepEqual(first.jobs.complete(lease, result), {accepted: false});
+  assert.equal(first.jobs.get(first.input.id).state, 'cancelled');
+
+  const second = fixture();
+  const otherLease = second.jobs.claim(second.input.id, 'worker', 100);
+  const gates = {
+    ...evidence,
+    get regionVerified() {
+      second.jobs.stop(second.input.id, 'blocked');
+      return true;
+    }
+  };
+  assert.equal(second.jobs.canDispatch(otherLease, gates), false);
+  assert.equal(second.jobs.get(second.input.id).state, 'blocked');
+});
