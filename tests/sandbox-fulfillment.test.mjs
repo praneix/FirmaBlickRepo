@@ -9,7 +9,7 @@ const event=(engine,body)=>{const raw=JSON.stringify(body);return engine.webhook
 const capture=(engine,orderId,id='event-capture')=>event(engine,{id,orderId,type:'captured',sku:SKU,amountMinor:AMOUNT_MINOR,currency:'EUR'});
 test('happy path: paid -> secure PDF, correct SKU and exact price',async()=>{
  const engine=create();const order=engine.createOrder({email:'finance@example.org'});
- assert.equal(order.amountMinor,99000);assert.equal(order.state,'pending');
+ assert.equal(order.amountMinor,99000);assert.equal(order.catalogueVersion,'2026-11-24');assert.equal(engine.getOrder(order.orderId).catalogueVersion,order.catalogueVersion);assert.equal(order.state,'pending');
  assert.throws(()=>engine.issueLink(order.orderId),/entitlement/);
  assert.equal(capture(engine,order.orderId).state,'paid');
  const link=engine.issueLink(order.orderId);const asset=await engine.redeem(link);
