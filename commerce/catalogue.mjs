@@ -1,5 +1,5 @@
 // Approved list prices in EUR minor units. No live checkout authorization.
-export const CATALOGUE_VERSION = '2026-11-25';
+export const CATALOGUE_VERSION = '2026-11-24';
 export const CURRENCY = 'EUR';
 export const ENERGY_SKU = 'FB-ENERGY-DE-2026-01';
 export const PUBLICATION_PRICES = Object.freeze({brief:39000,outlook:69000,flagship:99000,sectorBundle:169000,libraryBundle:399000});
