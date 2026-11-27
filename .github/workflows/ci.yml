@@ -41,6 +41,11 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run build
       - run: npm test
+      - name: Verify required ARIE research contract
+        run: |
+          test -f research/arie/jobs.mjs
+          test -f tests/arie/jobs.test.mjs
+          node --test tests/arie/jobs.test.mjs
       - name: Client privacy and credential audit
         run: node scripts/security-audit.mjs
       - name: Fail-closed beta release manifest assertion
