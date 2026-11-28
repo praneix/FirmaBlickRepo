@@ -17,3 +17,28 @@ for(const [slug,label,title,description] of pages){
  await writeFile(new URL('index.html',dir),'<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>'+label+' | FirmaBlick</title><link rel="stylesheet" href="/styles.css"></head><body><a class="skip" href="#main">Skip to content</a><header class="header"><div class="wrap row"><a class="brand" href="/"><span class="monogram">FB</span><span><strong>FirmaBlick</strong><small>STRUCTURE. PERSPECTIVE. IMPACT.</small></span></a><nav aria-label="Main navigation"><a href="/research-catalogue/">Research</a><a href="/#intelligence">Intelligence</a><a href="/pricing/">Pricing</a><a href="/webinars/">Webinars</a><a href="/#contact">Contact</a></nav></div></header><main id="main"><section class="hero"><div class="wrap"><p class="eyebrow">FirmaBlick / '+label+'</p><h1>'+title+'</h1><p class="lead">'+description+'</p><p class="notice">Visual review candidate · No commercial activation</p>'+prices+related+'</div></section><section class="section wrap"><h2>Explore FirmaBlick</h2><ul>'+links+'</ul></section></main><footer><div class="wrap"><p>FirmaBlick · DesiPlat, India · Protected development preview</p><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · <a href="/impressum/">Legal notice</a></div></footer></body></html>');
 }
 const home=new URL('index.html',output); const {readFile}=await import('node:fs/promises'); const html=await readFile(home,'utf8'); await writeFile(home,html.replace('</main>','<section class="section wrap"><h2>Website review directory</h2><ul>'+links+'</ul></section></main>'));
+
+// Page-specific visual content, all static and non-transactional.
+const detail={
+"research-catalogue":["Explore by decision horizon","Opportunity Brief: focused questions|Strategic Market Outlook: market structure and scenarios|Flagship: comprehensive decision support"],
+"energy":["Decision areas","Delivered power costs|Procurement and flexibility|Capital investment"],
+"manufacturing":["Decision areas","Production and demand|Capacity and productivity|Investment scenarios"],
+"automotive":["Planned coverage","Vehicle production|Electrification economics|Supplier exposure"],
+"supply-chain":["Planned coverage","Trade exposure|Supplier resilience|Logistics costs"],
+"opportunity-brief":["Publication structure","Executive question|Evidence and implications|Decision considerations"],
+"market-outlook":["Publication structure","Market structure|Drivers and constraints|Strategic implications"],
+"about":["Our approach","Structure: organise evidence|Perspective: interpret implications|Impact: support decisions"],
+"webinars":["Planned programme","Industrial energy economics|Manufacturing competitiveness|Supply chain resilience"],
+"webinar-preview":["Proposed agenda","Market context|Evidence and implications|Executive discussion"],
+"research-on-demand":["Engagement scope","Define the decision|Identify evidence needs|Agree deliverables"],
+"faq":["Common questions","Can I purchase today? Publication approval is pending.|Are scenarios forecasts? The current simulator is illustrative.|Which languages? English and German are planned."],
+"login":["Account access","Work email|Password|Sign-in unavailable in preview"],
+"library":["Library overview","Purchased publications: none connected|Membership access: not connected|Downloads: unavailable"],
+"checkout":["Order overview","Selected publication: none|Payment method: unavailable|Order submission: disabled"],
+"privacy":["Review topics","Operator and contact|Processing purposes|Retention and rights"],
+"terms":["Review topics","Access and licensing|Payment terms|Liability and governing law"],
+"impressum":["Review topics","Legal operator|Registered address|Contact details"],
+"disclaimer":["Interpretation","Historical data provenance|Scenario assumptions|Forecast uncertainty"],
+"cookies":["Preference categories","Essential functionality|Analytics: not connected|Marketing: not connected"],
+"refunds":["Review topics","Eligibility|Cancellation process|Digital content rights"]};
+for(const [slug,label] of pages){const p=new URL(slug+'/index.html',output);let h=await readFile(p,'utf8');const d=detail[slug];if(d){const cards=d[1].split('|').map(x=>'<article class="synthesis"><h3>'+x+'</h3></article>').join('');h=h.replace('<section class="section wrap"><h2>Explore FirmaBlick','<section class="section wrap"><h2>'+d[0]+'</h2><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:20px">'+cards+'</div></section><section class="section wrap"><h2>Explore FirmaBlick');}await writeFile(p,h);}
